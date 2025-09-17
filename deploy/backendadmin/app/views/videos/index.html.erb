@@ -1,0 +1,111 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="container mx-auto px-4">
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+      <div class="flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-gray-800">Video Library</h1>
+        <%= link_to "Upload Video", new_video_path, class: "bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition" %>
+      </div>
+    </div>
+
+    <% if @videos.any? %>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <% @videos.each do |video| %>
+          <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div class="p-6">
+              <h3 class="text-xl font-semibold mb-2"><%= video['title'] %></h3>
+              <p class="text-gray-600 text-sm mb-4"><%= video['description'] %></p>
+              
+              <div class="space-y-2 text-sm">
+                <div class="flex justify-between">
+                  <span class="text-gray-500">Video ID:</span>
+                  <span class="font-mono text-xs"><%= video['video_id'] %></span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-500">Size:</span>
+                  <span><%= video['file_size_mb'] %> MB</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-500">Duration:</span>
+                  <span><%= video['duration'] ? "#{video['duration']}s" : "N/A" %></span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-gray-500">Status:</span>
+                  <% if video['streaming_active'] %>
+                    <span class="text-green-600 font-semibold">
+                      🔴 Streaming
+                    </span>
+                  <% else %>
+                    <span class="text-gray-500">
+                      ⏸️ On-Demand
+                    </span>
+                  <% end %>
+                </div>
+              </div>
+              
+              <div class="mt-4 space-y-2">
+                <%= link_to "View Details", video_path(video['video_id']), 
+                    class: "block w-full text-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded transition" %>
+                
+                <button onclick="testStream('<%= video['video_id'] %>')" 
+                        class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-4 rounded transition">
+                  Test Stream
+                </button>
+                
+                <%= link_to "Delete", video_path(video['video_id']), 
+                    method: :delete, 
+                    data: { confirm: "Are you sure?" },
+                    class: "block w-full text-center bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded transition" %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="bg-white rounded-lg shadow p-8 text-center">
+        <p class="text-gray-500 mb-4">No videos uploaded yet</p>
+        <%= link_to "Upload First Video", new_video_path, 
+            class: "bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+function testStream(videoId) {
+  fetch(`/videos/${videoId}/play`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      const info = `
+Stream Ready!
+
+WebSocket URL: ${data.websocket_url}
+Room Name: ${data.room_name}
+Token: ${data.token}
+
+iOS Connection Info:
+- URL: ${data.websocket_url}
+- Room: ${data.room_name}
+- Token: (copied to clipboard)
+      `;
+      
+      // Copy token to clipboard
+      navigator.clipboard.writeText(data.token);
+      
+      alert(info);
+      console.log('Full response:', data);
+    } else {
+      alert(`Error: ${data.error}`);
+    }
+  })
+  .catch(error => {
+    alert(`Error: ${error.message}`);
+  });
+}
+</script>

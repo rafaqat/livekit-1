@@ -1,0 +1,130 @@
+<div class="min-h-screen bg-gray-50">
+  <div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-800">Rooms Management</h1>
+          <p class="text-gray-600 mt-2">Manage all LiveKit rooms</p>
+        </div>
+        <div>
+          <%= link_to "Create New Room", new_room_path, class: "bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition" %>
+        </div>
+      </div>
+    </div>
+
+    <% if @error %>
+      <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
+        <%= @error %>
+      </div>
+    <% end %>
+
+    <!-- Rooms Table -->
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+      <% if @rooms && @rooms.any? %>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Room Details</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Participants</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Settings</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <% @rooms.each do |room| %>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4">
+                    <div>
+                      <div class="text-sm font-medium text-gray-900"><%= room['name'] %></div>
+                      <div class="text-xs text-gray-500">SID: <%= room['sid'] %></div>
+                      <div class="text-xs text-gray-400">Created: <%= Time.at(room['creation_time'].to_i).strftime("%b %d, %Y %H:%M") rescue "N/A" %></div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center">
+                      <span class="<%= room['num_participants'].to_i > 0 ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %> px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full">
+                        <%= room['num_participants'] || 0 %> / <%= room['max_participants'] || 0 %>
+                      </span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="text-xs">
+                      <div>Empty timeout: <%= room['empty_timeout'] %>s</div>
+                      <div>Departure timeout: <%= room['departure_timeout'] %>s</div>
+                      <% if room['metadata'] && !room['metadata'].empty? %>
+                        <div class="mt-1 p-1 bg-gray-100 rounded">
+                          <span class="font-semibold">Metadata:</span> <%= room['metadata'] %>
+                        </div>
+                      <% end %>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <% if room['active_recording'] %>
+                      <span class="px-2 py-1 text-xs font-semibold text-red-600 bg-red-100 rounded-full">Recording</span>
+                    <% elsif room['num_participants'].to_i > 0 %>
+                      <span class="px-2 py-1 text-xs font-semibold text-green-600 bg-green-100 rounded-full">Active</span>
+                    <% else %>
+                      <span class="px-2 py-1 text-xs font-semibold text-gray-600 bg-gray-100 rounded-full">Empty</span>
+                    <% end %>
+                  </td>
+                  <td class="px-6 py-4 text-sm font-medium">
+                    <div class="flex space-x-2">
+                      <%= link_to "View", room_path(room['name']), class: "text-indigo-600 hover:text-indigo-900" %>
+                      <button onclick="joinRoom('<%= room['name'] %>')" class="text-green-600 hover:text-green-900">Join</button>
+                      <%= link_to "Delete", room_path(room['name']), method: :delete, data: { confirm: "Are you sure? This will remove all participants." }, class: "text-red-600 hover:text-red-900" %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <div class="text-center py-12">
+          <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+          </svg>
+          <h3 class="mt-2 text-sm font-medium text-gray-900">No rooms</h3>
+          <p class="mt-1 text-sm text-gray-500">Get started by creating a new room.</p>
+          <div class="mt-6">
+            <%= link_to "Create New Room", new_room_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+  function joinRoom(roomName) {
+    const identity = prompt("Enter your name to join the room:", "Admin");
+    
+    if (identity) {
+      fetch('/rooms/generate_token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+          room_name: roomName,
+          identity: identity,
+          name: identity,
+          can_publish: true,
+          can_subscribe: true
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.join_url) {
+          window.open(data.join_url, '_blank');
+        } else {
+          alert(`Error: ${data.error}`);
+        }
+      });
+    }
+  }
+</script>

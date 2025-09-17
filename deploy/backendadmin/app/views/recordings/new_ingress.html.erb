@@ -1,0 +1,82 @@
+<div class="min-h-screen bg-gray-50">
+  <div class="container mx-auto px-4 py-8 max-w-3xl">
+    <div class="bg-white rounded-lg shadow-lg p-6">
+      <h1 class="text-2xl font-bold text-gray-800 mb-6">Create Stream Input (Ingress)</h1>
+      <p class="text-gray-600 mb-6">Configure an RTMP endpoint to stream into a LiveKit room</p>
+      
+      <%= form_with url: create_ingress_recordings_path, local: true do |form| %>
+        <!-- Ingress Name -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Stream Name</label>
+          <input type="text" name="name" required placeholder="e.g., Main Stage Stream" 
+                 class="w-full border-gray-300 rounded-lg shadow-sm">
+        </div>
+        
+        <!-- Room Selection -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Target Room</label>
+          <select name="room_name" class="w-full border-gray-300 rounded-lg shadow-sm" required>
+            <option value="">Select a room...</option>
+            <% @rooms.each do |room| %>
+              <option value="<%= room['name'] %>">
+                <%= room['name'] %> (<%= room['num_participants'] %> participants)
+              </option>
+            <% end %>
+          </select>
+        </div>
+        
+        <!-- Input Type -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Input Type</label>
+          <select name="input_type" class="w-full border-gray-300 rounded-lg shadow-sm">
+            <option value="RTMP_INPUT">RTMP</option>
+            <option value="WHIP_INPUT">WHIP (WebRTC)</option>
+          </select>
+        </div>
+        
+        <!-- Participant Identity -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Participant Identity</label>
+          <input type="text" name="participant_identity" required placeholder="e.g., stream-host-1" 
+                 class="w-full border-gray-300 rounded-lg shadow-sm">
+          <p class="text-xs text-gray-500 mt-1">Unique identifier for this stream participant</p>
+        </div>
+        
+        <!-- Participant Name -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Participant Display Name</label>
+          <input type="text" name="participant_name" placeholder="e.g., Main Host" 
+                 class="w-full border-gray-300 rounded-lg shadow-sm">
+          <p class="text-xs text-gray-500 mt-1">Display name shown to other participants</p>
+        </div>
+        
+        <!-- Custom Stream Key -->
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-gray-700 mb-2">Custom Stream Key (optional)</label>
+          <input type="text" name="stream_key" placeholder="Leave empty for auto-generated key" 
+                 class="w-full border-gray-300 rounded-lg shadow-sm">
+          <p class="text-xs text-gray-500 mt-1">A secure key will be generated if not provided</p>
+        </div>
+        
+        <!-- Info Box -->
+        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <h3 class="font-semibold text-blue-800 mb-2">How to use the stream input:</h3>
+          <ol class="list-decimal list-inside text-sm text-blue-700 space-y-1">
+            <li>After creation, you'll receive an RTMP URL and stream key</li>
+            <li>Configure your streaming software (OBS, Wirecast, etc.) with these credentials</li>
+            <li>The stream will appear as a participant in the selected room</li>
+            <li>Other participants can view and interact with the stream</li>
+          </ol>
+        </div>
+        
+        <!-- Submit Buttons -->
+        <div class="flex justify-between">
+          <%= link_to "Cancel", recordings_path, class: "bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition" %>
+          <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition">
+            Create Stream Input
+          </button>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

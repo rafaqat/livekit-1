@@ -1,0 +1,188 @@
+<div class="min-h-screen bg-gray-50">
+  <div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-800">LiveKit Admin Dashboard</h1>
+          <p class="text-gray-600 mt-2">Manage your LiveKit server installation</p>
+        </div>
+        <div class="text-right">
+          <p class="text-sm text-gray-500">Server URL</p>
+          <p class="font-mono text-sm"><%= LivekitService::SERVER_URL %></p>
+        </div>
+      </div>
+    </div>
+
+    <% if @error %>
+      <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
+        <%= @error %>
+      </div>
+    <% end %>
+
+    <!-- Stats Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center">
+          <div class="p-3 bg-blue-100 rounded-lg">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">Total Rooms</p>
+            <p class="text-2xl font-semibold text-gray-900"><%= @server_info[:total_rooms] rescue 0 %></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center">
+          <div class="p-3 bg-green-100 rounded-lg">
+            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">Active Participants</p>
+            <p class="text-2xl font-semibold text-gray-900"><%= @server_info[:total_participants] rescue 0 %></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center">
+          <div class="p-3 bg-purple-100 rounded-lg">
+            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">Server Status</p>
+            <p class="text-sm font-semibold text-green-600">Online</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center">
+          <div class="p-3 bg-yellow-100 rounded-lg">
+            <svg class="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+            </svg>
+          </div>
+          <div class="ml-4">
+            <p class="text-sm font-medium text-gray-500">API Version</p>
+            <p class="text-sm font-semibold text-gray-900">v1.9.1</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+      <h2 class="text-xl font-semibold mb-4">Quick Actions</h2>
+      <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <%= link_to new_room_path, class: "bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg text-center transition" do %>
+          Create New Room
+        <% end %>
+        <%= link_to videos_path, class: "bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-3 px-4 rounded-lg text-center transition" do %>
+          Video Library
+        <% end %>
+        <%= link_to streaming_test_index_path, class: "bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 px-4 rounded-lg text-center transition" do %>
+          🧪 Streaming Test
+        <% end %>
+        <%= link_to new_egress_recordings_path, class: "bg-red-500 hover:bg-red-600 text-white font-semibold py-3 px-4 rounded-lg text-center transition" do %>
+          Start Recording
+        <% end %>
+        <%= link_to monitoring_index_path, class: "bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 px-4 rounded-lg text-center transition" do %>
+          View Monitoring
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Recent Rooms -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-xl font-semibold">Recent Rooms</h2>
+        <%= link_to "View All", rooms_path, class: "text-blue-500 hover:text-blue-700" %>
+      </div>
+      
+      <% if @recent_rooms && @recent_rooms.any? %>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead>
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Room Name</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Participants</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <% @recent_rooms.each do |room| %>
+                <tr>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900"><%= room['name'] %></div>
+                    <div class="text-xs text-gray-500">SID: <%= room['sid'] %></div>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                      <%= room['num_participants'] || 0 %> / <%= room['max_participants'] || 0 %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <%= Time.at(room['creation_time'].to_i).strftime("%b %d, %Y %H:%M") rescue "N/A" %>
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <%= link_to "View", room_path(room['name']), class: "text-indigo-600 hover:text-indigo-900 mr-3" %>
+                    <%= link_to "Delete", room_path(room['name']), method: :delete, data: { confirm: "Are you sure?" }, class: "text-red-600 hover:text-red-900" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <p class="text-gray-500 text-center py-4">No active rooms</p>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+  function generateTestToken() {
+    const roomName = prompt("Enter room name:", "test-room");
+    const identity = prompt("Enter participant identity:", "test-user");
+    
+    if (roomName && identity) {
+      fetch('/rooms/generate_token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+          room_name: roomName,
+          identity: identity,
+          name: identity,
+          can_publish: true,
+          can_subscribe: true
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.token) {
+          alert(`Token generated!\n\nJoin URL: ${data.join_url}\n\nToken: ${data.token}`);
+          console.log('Full response:', data);
+        } else {
+          alert(`Error: ${data.error}`);
+        }
+      });
+    }
+  }
+  
+  function refreshStats() {
+    window.location.reload();
+  }
+</script>

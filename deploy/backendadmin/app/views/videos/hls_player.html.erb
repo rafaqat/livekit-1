@@ -1,0 +1,154 @@
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold mb-4">HLS Player - <%= @video.title %></h1>
+  
+  <div class="bg-white rounded-lg shadow-lg p-6">
+    <% if @video.hls_ready %>
+      <!-- HLS.js Player -->
+      <video id="hls-video" class="w-full max-w-4xl mx-auto" controls></video>
+      
+      <div class="mt-4">
+        <p class="text-sm text-gray-600">HLS Streaming: <%= @video.hls_path %></p>
+        <div id="quality-selector" class="mt-2"></div>
+      </div>
+      
+      <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+      <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          const video = document.getElementById('hls-video');
+          const hlsPath = '<%= @video.hls_path %>';
+          
+          if (Hls.isSupported()) {
+            const hls = new Hls({
+              debug: true,
+              enableWorker: true,
+              lowLatencyMode: false,
+              backBufferLength: 90
+            });
+            
+            hls.loadSource(hlsPath);
+            hls.attachMedia(video);
+            
+            hls.on(Hls.Events.MANIFEST_PARSED, function(event, data) {
+              console.log('Manifest loaded, found ' + data.levels.length + ' quality levels');
+              
+              // Create quality selector
+              const qualitySelector = document.getElementById('quality-selector');
+              qualitySelector.innerHTML = '<label class="block text-sm font-medium mb-2">Quality:</label>';
+              
+              const select = document.createElement('select');
+              select.className = 'px-3 py-2 border rounded-md';
+              
+              // Add auto option
+              const autoOption = document.createElement('option');
+              autoOption.value = -1;
+              autoOption.text = 'Auto';
+              select.appendChild(autoOption);
+              
+              // Add quality levels
+              data.levels.forEach((level, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.text = `${level.height}p (${Math.round(level.bitrate/1000)}kbps)`;
+                select.appendChild(option);
+              });
+              
+              select.addEventListener('change', function() {
+                hls.currentLevel = parseInt(this.value);
+              });
+              
+              qualitySelector.appendChild(select);
+            });
+            
+            hls.on(Hls.Events.LEVEL_SWITCHED, function(event, data) {
+              console.log('Switched to quality level ' + data.level);
+            });
+            
+            hls.on(Hls.Events.ERROR, function(event, data) {
+              if (data.fatal) {
+                switch(data.type) {
+                  case Hls.ErrorTypes.NETWORK_ERROR:
+                    console.error('Fatal network error encountered, trying to recover');
+                    hls.startLoad();
+                    break;
+                  case Hls.ErrorTypes.MEDIA_ERROR:
+                    console.error('Fatal media error encountered, trying to recover');
+                    hls.recoverMediaError();
+                    break;
+                  default:
+                    console.error('Fatal error, cannot recover');
+                    hls.destroy();
+                    break;
+                }
+              }
+            });
+          } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+            // Native HLS support (Safari, iOS)
+            video.src = hlsPath;
+          } else {
+            alert('HLS is not supported in this browser');
+          }
+        });
+      </script>
+    <% elsif @video.transcoding_status == 'processing' %>
+      <div class="bg-yellow-50 p-4 rounded-lg">
+        <h3 class="font-semibold text-yellow-800">Transcoding in Progress</h3>
+        <p class="text-yellow-700 mt-2">The video is being converted to HLS format...</p>
+        <div class="mt-4">
+          <div class="bg-yellow-200 rounded-full h-4">
+            <div class="bg-yellow-600 rounded-full h-4" style="width: <%= @video.transcoding_progress || 0 %>%"></div>
+          </div>
+          <p class="text-sm text-yellow-700 mt-2">Progress: <%= @video.transcoding_progress || 0 %>%</p>
+        </div>
+      </div>
+    <% else %>
+      <div class="bg-gray-50 p-4 rounded-lg">
+        <h3 class="font-semibold text-gray-800">VOD Playback</h3>
+        <video controls class="w-full max-w-4xl mx-auto mt-4">
+          <source src="/videos/<%= @video.video_id %>.<%= @video.file_extension || 'mp4' %>" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        
+        <% if @video.transcoding_status == 'pending' %>
+          <p class="text-gray-600 mt-4">HLS transcoding will start soon...</p>
+        <% elsif @video.transcoding_status == 'failed' %>
+          <p class="text-red-600 mt-4">Transcoding failed. Using original file.</p>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+  
+  <div class="mt-8 grid grid-cols-2 gap-4">
+    <div class="bg-white p-4 rounded-lg shadow">
+      <h3 class="font-semibold mb-2">Video Information</h3>
+      <dl class="space-y-1 text-sm">
+        <div class="flex justify-between">
+          <dt class="text-gray-600">File Size:</dt>
+          <dd><%= @video.file_size_mb %> MB</dd>
+        </div>
+        <div class="flex justify-between">
+          <dt class="text-gray-600">Duration:</dt>
+          <dd><%= @video.duration_seconds %> seconds</dd>
+        </div>
+        <div class="flex justify-between">
+          <dt class="text-gray-600">HLS Ready:</dt>
+          <dd><%= @video.hls_ready ? 'Yes' : 'No' %></dd>
+        </div>
+        <div class="flex justify-between">
+          <dt class="text-gray-600">Transcoding Status:</dt>
+          <dd><%= @video.transcoding_status || 'N/A' %></dd>
+        </div>
+      </dl>
+    </div>
+    
+    <div class="bg-white p-4 rounded-lg shadow">
+      <h3 class="font-semibold mb-2">Streaming Modes</h3>
+      <div class="space-y-2">
+        <%= link_to "Standard VOD", video_path(@video), class: "block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-center" %>
+        <% if @video.hls_ready %>
+          <%= link_to "HLS Streaming", hls_player_video_path(@video), class: "block px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 text-center" %>
+        <% end %>
+        <%= link_to "Test LiveKit Broadcast", streaming_test_path, class: "block px-4 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 text-center" %>
+      </div>
+    </div>
+  </div>
+</div>
