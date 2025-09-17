@@ -1,0 +1,516 @@
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY) /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Create (0.1ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2025-09-13 13:03:51.704586', '2025-09-13 13:03:51.704588') RETURNING "key" /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backendadmin'*/[0m
+Migrating to CreatePins (20250913103851)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE TABLE "pins" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "title" varchar, "description" text, "latitude" decimal, "longitude" decimal, "address" varchar, "status" varchar, "user_name" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250913103851') RETURNING "version" /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+Migrating to CreateVideos (20250913130319)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE TABLE "videos" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "video_id" varchar, "title" varchar, "description" text, "original_filename" varchar, "file_size" bigint, "room_name" varchar, "ingress_id" varchar, "ingress_url" varchar, "stream_key" varchar, "video_url" varchar, "streaming_active" boolean DEFAULT 0, "streaming_status" varchar DEFAULT 'NOT_STARTED', "uploaded_at" datetime(6), "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_videos_on_video_id" ON "videos" ("video_id") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_videos_on_room_name" ON "videos" ("room_name") /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250913130319') RETURNING "version" /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backendadmin'*/[0m
+  [1m[36mVideo Load (0.2ms)[0m  [1m[34mSELECT "videos".* FROM "videos" ORDER BY "videos"."id" ASC LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mVideo Count (1.6ms)[0m  [1m[34mSELECT COUNT(*) FROM "videos" /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:5:in '<main>'
+  [1m[36mVideo Exists? (0.9ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."video_id" = 'test_video_1757772314' LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:5:in '<main>'
+  [1m[36mVideo Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."room_name" = 'test_room_1757772314' LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:5:in '<main>'
+  [1m[36mVideo Create (0.7ms)[0m  [1m[32mINSERT INTO "videos" ("video_id", "title", "description", "original_filename", "file_size", "room_name", "ingress_id", "ingress_url", "stream_key", "video_url", "streaming_active", "streaming_status", "uploaded_at", "created_at", "updated_at") VALUES ('test_video_1757772314', 'Test Video Stream', NULL, NULL, 1024000, 'test_room_1757772314', NULL, NULL, NULL, NULL, 0, 'NOT_STARTED', '2025-09-13 14:05:14.913936', '2025-09-13 14:05:14.933225', '2025-09-13 14:05:14.933225') RETURNING "id" /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:5:in '<main>'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:5:in '<main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:5:in '<main>'
+  [1m[36mVideo Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."video_id" = 'test_video_1757772330' LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:5:in '<main>'
+  [1m[36mVideo Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."room_name" = 'test_room_1757772330' LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:5:in '<main>'
+  [1m[36mVideo Create (0.1ms)[0m  [1m[32mINSERT INTO "videos" ("video_id", "title", "description", "original_filename", "file_size", "room_name", "ingress_id", "ingress_url", "stream_key", "video_url", "streaming_active", "streaming_status", "uploaded_at", "created_at", "updated_at") VALUES ('test_video_1757772330', 'Test Video Stream', NULL, NULL, 1024000, 'test_room_1757772330', NULL, NULL, NULL, NULL, 0, 'NOT_STARTED', '2025-09-13 14:05:30.302447', '2025-09-13 14:05:30.318378', '2025-09-13 14:05:30.318378') RETURNING "id" /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:5:in '<main>'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:5:in '<main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:5:in '<main>'
+  [1m[36mVideo Exists? (0.4ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."video_id" = 'test_video_1757772345' LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:5:in '<main>'
+  [1m[36mVideo Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."room_name" = 'test_room_1757772345' LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:5:in '<main>'
+  [1m[36mVideo Create (0.1ms)[0m  [1m[32mINSERT INTO "videos" ("video_id", "title", "description", "original_filename", "file_size", "room_name", "ingress_id", "ingress_url", "stream_key", "video_url", "streaming_active", "streaming_status", "uploaded_at", "created_at", "updated_at") VALUES ('test_video_1757772345', 'Test Video Stream', NULL, NULL, 1024000, 'test_room_1757772345', NULL, NULL, NULL, NULL, 0, 'NOT_STARTED', '2025-09-13 14:05:45.339378', '2025-09-13 14:05:45.355594', '2025-09-13 14:05:45.355594') RETURNING "id" /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:5:in '<main>'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:5:in '<main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:87:in '<main>'
+  [1m[36mVideo Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."room_name" = 'test_room_1757772345' AND "videos"."id" != 3 LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:87:in '<main>'
+  [1m[36mVideo Update (0.0ms)[0m  [1m[33mUPDATE "videos" SET "ingress_url" = '', "streaming_active" = 1, "streaming_status" = 'ENDPOINT_INACTIVE', "updated_at" = '2025-09-13 14:05:45.520687' WHERE "videos"."id" = 3 /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:87:in '<main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:87:in '<main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:5:in '<main>'
+  [1m[36mVideo Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."video_id" = 'test_video_1757772365' LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:5:in '<main>'
+  [1m[36mVideo Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."room_name" = 'test_room_1757772365' LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:5:in '<main>'
+  [1m[36mVideo Create (0.3ms)[0m  [1m[32mINSERT INTO "videos" ("video_id", "title", "description", "original_filename", "file_size", "room_name", "ingress_id", "ingress_url", "stream_key", "video_url", "streaming_active", "streaming_status", "uploaded_at", "created_at", "updated_at") VALUES ('test_video_1757772365', 'Test Video Stream', NULL, NULL, 1024000, 'test_room_1757772365', NULL, NULL, NULL, NULL, 0, 'NOT_STARTED', '2025-09-13 14:06:05.048446', '2025-09-13 14:06:05.067225', '2025-09-13 14:06:05.067225') RETURNING "id" /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:5:in '<main>'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:5:in '<main>'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:95:in '<main>'
+  [1m[36mVideo Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."room_name" = 'test_room_1757772365' AND "videos"."id" != 4 LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:95:in '<main>'
+  [1m[36mVideo Update (0.0ms)[0m  [1m[33mUPDATE "videos" SET "ingress_id" = 'IN_74oUtimbSpP3', "ingress_url" = '', "streaming_active" = 1, "streaming_status" = 'ENDPOINT_INACTIVE', "updated_at" = '2025-09-13 14:06:05.219292' WHERE "videos"."id" = 4 /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:95:in '<main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ test_stream.rb:95:in '<main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ test_url_input.rb:12:in '<main>'
+  [1m[36mVideo Exists? (0.8ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."video_id" = 'test_url_1757772529' LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ test_url_input.rb:12:in '<main>'
+  [1m[36mVideo Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."room_name" = 'test_url_room_1757772529' LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ test_url_input.rb:12:in '<main>'
+  [1m[36mVideo Create (0.3ms)[0m  [1m[32mINSERT INTO "videos" ("video_id", "title", "description", "original_filename", "file_size", "room_name", "ingress_id", "ingress_url", "stream_key", "video_url", "streaming_active", "streaming_status", "uploaded_at", "created_at", "updated_at") VALUES ('test_url_1757772529', 'URL Input Test Video', NULL, NULL, 1024000, 'test_url_room_1757772529', NULL, NULL, NULL, NULL, 0, 'NOT_STARTED', '2025-09-13 14:08:49.734038', '2025-09-13 14:08:49.750706', '2025-09-13 14:08:49.750706') RETURNING "id" /*application='Backendadmin'*/[0m
+  ↳ test_url_input.rb:12:in '<main>'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ test_url_input.rb:12:in '<main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ test_url_input_string.rb:7:in '<main>'
+  [1m[36mVideo Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."video_id" = 'test_str_1757772619' LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ test_url_input_string.rb:7:in '<main>'
+  [1m[36mVideo Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."room_name" = 'test_str_room_1757772619' LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ test_url_input_string.rb:7:in '<main>'
+  [1m[36mVideo Create (0.3ms)[0m  [1m[32mINSERT INTO "videos" ("video_id", "title", "description", "original_filename", "file_size", "room_name", "ingress_id", "ingress_url", "stream_key", "video_url", "streaming_active", "streaming_status", "uploaded_at", "created_at", "updated_at") VALUES ('test_str_1757772619', 'URL String Test', NULL, NULL, 1024000, 'test_str_room_1757772619', NULL, NULL, NULL, NULL, 0, 'NOT_STARTED', '2025-09-13 14:10:19.500779', '2025-09-13 14:10:19.517305', '2025-09-13 14:10:19.517305') RETURNING "id" /*application='Backendadmin'*/[0m
+  ↳ test_url_input_string.rb:7:in '<main>'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ test_url_input_string.rb:7:in '<main>'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ test_complete_streaming.rb:36:in '<main>'
+  [1m[36mVideo Exists? (0.8ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."video_id" = 'demo_1757772661' LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ test_complete_streaming.rb:36:in '<main>'
+  [1m[36mVideo Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."room_name" = 'room_demo_1757772661' LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ test_complete_streaming.rb:36:in '<main>'
+  [1m[36mVideo Create (0.2ms)[0m  [1m[32mINSERT INTO "videos" ("video_id", "title", "description", "original_filename", "file_size", "room_name", "ingress_id", "ingress_url", "stream_key", "video_url", "streaming_active", "streaming_status", "uploaded_at", "created_at", "updated_at") VALUES ('demo_1757772661', 'Big Buck Bunny Demo', 'Test video for URL_INPUT streaming', NULL, 158008374, 'room_demo_1757772661', NULL, NULL, NULL, NULL, 0, 'NOT_STARTED', '2025-09-13 14:11:06.661267', '2025-09-13 14:11:06.680687', '2025-09-13 14:11:06.680687') RETURNING "id" /*application='Backendadmin'*/[0m
+  ↳ test_complete_streaming.rb:36:in '<main>'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ test_complete_streaming.rb:36:in '<main>'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ test_complete_streaming.rb:110:in '<main>'
+  [1m[36mVideo Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."room_name" = 'room_demo_1757772661' AND "videos"."id" != 7 LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ test_complete_streaming.rb:110:in '<main>'
+  [1m[36mVideo Update (0.1ms)[0m  [1m[33mUPDATE "videos" SET "ingress_id" = 'IN_CEzAqWUGXQx5', "ingress_url" = 'https://admin.livekit.lovedrop.live/videos/demo_1757772661.mp4', "streaming_active" = 1, "streaming_status" = 'ENDPOINT_BUFFERING', "updated_at" = '2025-09-13 14:11:08.068594' WHERE "videos"."id" = 7 /*application='Backendadmin'*/[0m
+  ↳ test_complete_streaming.rb:110:in '<main>'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ test_complete_streaming.rb:110:in '<main>'
+  [1m[36mVideo Load (0.3ms)[0m  [1m[34mSELECT "videos".* FROM "videos" WHERE "videos"."video_id" = 'demo_1757772661' LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ test_final_streaming.rb:8:in '<main>'
+  [1m[36mTRANSACTION (0.4ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ test_final_streaming.rb:97:in '<main>'
+  [1m[36mVideo Exists? (0.1ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."room_name" = 'room_demo_1757772661' AND "videos"."id" != 7 LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ test_final_streaming.rb:97:in '<main>'
+  [1m[36mVideo Update (0.1ms)[0m  [1m[33mUPDATE "videos" SET "ingress_id" = 'IN_v2JtCeqtupTK', "updated_at" = '2025-09-13 14:12:49.745320' WHERE "videos"."id" = 7 /*application='Backendadmin'*/[0m
+  ↳ test_final_streaming.rb:97:in '<main>'
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ test_final_streaming.rb:97:in '<main>'
+  [1m[36mVideo Count (3.5ms)[0m  [1m[34mSELECT COUNT(*) FROM "videos" /*application='Backendadmin'*/[0m
+  [1m[36mVideo Load (0.2ms)[0m  [1m[34mSELECT "videos".* FROM "videos" LIMIT 3 /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mVideo Exists? (0.8ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."video_id" = 'test_sample_1757780447' LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mVideo Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."room_name" = 'room_test_1757780447' LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mVideo Create (0.5ms)[0m  [1m[32mINSERT INTO "videos" ("video_id", "title", "description", "original_filename", "file_size", "room_name", "ingress_id", "ingress_url", "stream_key", "video_url", "streaming_active", "streaming_status", "uploaded_at", "created_at", "updated_at") VALUES ('test_sample_1757780447', 'Big Buck Bunny Test', NULL, NULL, 158008374, 'room_test_1757780447', NULL, NULL, NULL, NULL, 0, 'NOT_STARTED', '2025-09-13 16:20:47.455050', '2025-09-13 16:20:47.475441', '2025-09-13 16:20:47.475441') RETURNING "id" /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mVideo Exists? (0.6ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."video_id" = 'test_sample_1757780460' LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mVideo Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."room_name" = 'room_test_sample_1757780460' LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mVideo Create (0.2ms)[0m  [1m[32mINSERT INTO "videos" ("video_id", "title", "description", "original_filename", "file_size", "room_name", "ingress_id", "ingress_url", "stream_key", "video_url", "streaming_active", "streaming_status", "uploaded_at", "created_at", "updated_at") VALUES ('test_sample_1757780460', 'Big Buck Bunny Test', NULL, NULL, 158008374, 'room_test_sample_1757780460', NULL, NULL, NULL, NULL, 0, 'NOT_STARTED', '2025-09-13 16:21:00.595709', '2025-09-13 16:21:00.610920', '2025-09-13 16:21:00.610920') RETURNING "id" /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mVideo Load (0.2ms)[0m  [1m[34mSELECT "videos".* FROM "videos" WHERE "videos"."video_id" = 'video_9f21e852ddce0e26' LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mVideo Load (2.0ms)[0m  [1m[34mSELECT "videos".* FROM "videos" /*application='Backendadmin'*/[0m
+  [1m[36mVideo Load (1.4ms)[0m  [1m[34mSELECT "videos".* FROM "videos" /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mVideo Destroy (0.5ms)[0m  [1m[31mDELETE FROM "videos" WHERE "videos"."id" = 1 /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mVideo Destroy (0.2ms)[0m  [1m[31mDELETE FROM "videos" WHERE "videos"."id" = 2 /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mVideo Destroy (0.2ms)[0m  [1m[31mDELETE FROM "videos" WHERE "videos"."id" = 3 /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mVideo Destroy (0.3ms)[0m  [1m[31mDELETE FROM "videos" WHERE "videos"."id" = 4 /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mVideo Destroy (0.3ms)[0m  [1m[31mDELETE FROM "videos" WHERE "videos"."id" = 5 /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mVideo Destroy (0.3ms)[0m  [1m[31mDELETE FROM "videos" WHERE "videos"."id" = 6 /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mVideo Destroy (0.2ms)[0m  [1m[31mDELETE FROM "videos" WHERE "videos"."id" = 7 /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mVideo Destroy (0.3ms)[0m  [1m[31mDELETE FROM "videos" WHERE "videos"."id" = 8 /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mVideo Destroy (1.3ms)[0m  [1m[31mDELETE FROM "videos" WHERE "videos"."id" = 9 /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mVideo Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "videos" /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[35m (0.6ms)[0m  [1m[35mDROP TABLE IF EXISTS "pins" /*application='Backendadmin'*/[0m
+  [1m[35m (0.2ms)[0m  [1m[35mCREATE TABLE "pins" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "title" varchar, "description" text, "latitude" decimal, "longitude" decimal, "address" varchar, "status" varchar, "user_name" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "videos" /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "videos" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "video_id" varchar, "title" varchar, "description" text, "original_filename" varchar, "file_size" bigint, "room_name" varchar, "ingress_id" varchar, "ingress_url" varchar, "stream_key" varchar, "video_url" varchar, "streaming_active" boolean DEFAULT 0, "streaming_status" varchar DEFAULT 'NOT_STARTED', "uploaded_at" datetime(6), "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_videos_on_room_name" ON "videos" ("room_name") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_videos_on_video_id" ON "videos" ("video_id") /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY) /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (20250913130319) /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES
+(20250913103851); /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Create (0.0ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2025-09-13 16:26:42.574062', '2025-09-13 16:26:42.574063') RETURNING "key" /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'schema_sha1' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Create (0.0ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('schema_sha1', '4725ef68c412411cc42593c7e518970356345c65', '2025-09-13 16:26:42.574962', '2025-09-13 16:26:42.574962') RETURNING "key" /*application='Backendadmin'*/[0m
+  [1m[35m (0.3ms)[0m  [1m[35mDROP TABLE IF EXISTS "pins" /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "pins" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "title" varchar, "description" text, "latitude" decimal, "longitude" decimal, "address" varchar, "status" varchar, "user_name" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "videos" /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "videos" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "video_id" varchar, "title" varchar, "description" text, "original_filename" varchar, "file_size" bigint, "room_name" varchar, "ingress_id" varchar, "ingress_url" varchar, "stream_key" varchar, "video_url" varchar, "streaming_active" boolean DEFAULT 0, "streaming_status" varchar DEFAULT 'NOT_STARTED', "uploaded_at" datetime(6), "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_videos_on_room_name" ON "videos" ("room_name") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_videos_on_video_id" ON "videos" ("video_id") /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY) /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (20250913130319) /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES
+(20250913103851); /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Create (0.0ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2025-09-13 16:26:42.580588', '2025-09-13 16:26:42.580596') RETURNING "key" /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Update (0.0ms)[0m  [1m[33mUPDATE "ar_internal_metadata" SET "value" = 'test', "updated_at" = '2025-09-13 16:26:42.581202' WHERE "ar_internal_metadata"."key" = 'environment' /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.1ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'schema_sha1' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Create (0.1ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('schema_sha1', '4725ef68c412411cc42593c7e518970356345c65', '2025-09-13 16:26:42.588352', '2025-09-13 16:26:42.588353') RETURNING "key" /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backendadmin'*/[0m
+  [1m[36mVideo Load (0.2ms)[0m  [1m[34mSELECT "videos".* FROM "videos" WHERE "videos"."video_id" = 'video_ddbef9a06f12555d' LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mVideo Count (1.9ms)[0m  [1m[34mSELECT COUNT(*) FROM "videos" /*application='Backendadmin'*/[0m
+  [1m[36mVideo Load (0.0ms)[0m  [1m[34mSELECT "videos".* FROM "videos" /*application='Backendadmin'*/[0m
+  [1m[36mVideo Load (1.4ms)[0m  [1m[34mSELECT "videos".* FROM "videos" /*application='Backendadmin'*/[0m
+  [1m[36mVideo Count (0.2ms)[0m  [1m[34mSELECT COUNT(*) FROM "videos" /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.2ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backendadmin'*/[0m
+Migrating to AddVodFieldsToVideos (20250913171427)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[35m (0.6ms)[0m  [1m[35mALTER TABLE "videos" ADD "streaming_mode" integer DEFAULT 0 NOT NULL /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mALTER TABLE "videos" ADD "ingress_state" integer DEFAULT 0 NOT NULL /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mALTER TABLE "videos" ADD "auto_restart" boolean DEFAULT 0 /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mALTER TABLE "videos" ADD "loop_video" boolean DEFAULT 0 /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mALTER TABLE "videos" ADD "total_views" integer DEFAULT 0 /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mALTER TABLE "videos" ADD "total_watch_seconds" integer DEFAULT 0 /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mALTER TABLE "videos" ADD "average_completion_rate" float DEFAULT 0.0 /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mALTER TABLE "videos" ADD "duration_seconds" integer /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_videos_on_streaming_mode" ON "videos" ("streaming_mode") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_videos_on_ingress_state" ON "videos" ("ingress_state") /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250913171427') RETURNING "version" /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+Migrating to CreateViewingSessions (20250913171512)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE TABLE "viewing_sessions" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "video_id" integer NOT NULL, "viewer_identity" varchar, "viewer_ip" varchar, "room_name" varchar, "started_at" datetime(6), "ended_at" datetime(6), "duration_seconds" integer DEFAULT 0, "quality_switches" integer DEFAULT 0, "average_quality" varchar, "average_bitrate" float, "buffering_events" integer DEFAULT 0, "connection_drops" integer DEFAULT 0, "quality_timeline" json, "metadata" json, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_20ad626617"
+FOREIGN KEY ("video_id")
+  REFERENCES "videos" ("id")
+) /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_video_id" ON "viewing_sessions" ("video_id") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_viewer_identity" ON "viewing_sessions" ("viewer_identity") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_started_at" ON "viewing_sessions" ("started_at") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_video_id_and_started_at" ON "viewing_sessions" ("video_id", "started_at") /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250913171512') RETURNING "version" /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.4ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.1ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backendadmin'*/[0m
+Migrating to HardenVodSchemaAndIndexes (20250913182130)
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[35m (2.2ms)[0m  [1m[35mALTER TABLE "videos" ADD "file_extension" varchar /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mALTER TABLE "videos" ADD "scheduled_start_at" datetime(6) /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mALTER TABLE "videos" ADD "scheduled_end_at" datetime(6) /*application='Backendadmin'*/[0m
+  [1m[35mSQL (0.2ms)[0m  [1m[35mPRAGMA foreign_keys /*application='Backendadmin'*/[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='Backendadmin'*/[0m
+  [1m[35m (0.3ms)[0m  [1m[35mCREATE TEMPORARY TABLE "avideos" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "video_id" varchar, "title" varchar, "description" text, "original_filename" varchar, "file_size" bigint, "room_name" varchar, "ingress_id" varchar, "ingress_url" varchar, "stream_key" varchar, "video_url" varchar, "streaming_active" boolean DEFAULT 0, "streaming_status" varchar DEFAULT 'NOT_STARTED', "uploaded_at" datetime(6), "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "streaming_mode" integer DEFAULT 0 NOT NULL, "ingress_state" integer DEFAULT 0 NOT NULL, "auto_restart" boolean DEFAULT 0, "loop_video" boolean DEFAULT 0, "total_views" integer DEFAULT 0, "total_watch_seconds" integer DEFAULT 0, "average_completion_rate" float DEFAULT 0.0, "duration_seconds" integer, "file_extension" varchar, "scheduled_start_at" datetime(6), "scheduled_end_at" datetime(6)) /*application='Backendadmin'*/[0m
+  [1m[35m (0.4ms)[0m  [1m[35mCREATE INDEX "tindex_avideos_on_ingress_state" ON "avideos" ("ingress_state") /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "tindex_avideos_on_streaming_mode" ON "avideos" ("streaming_mode") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_avideos_on_video_id" ON "avideos" ("video_id") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_avideos_on_room_name" ON "avideos" ("room_name") /*application='Backendadmin'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "avideos" ("id","video_id","title","description","original_filename","file_size","room_name","ingress_id","ingress_url","stream_key","video_url","streaming_active","streaming_status","uploaded_at","created_at","updated_at","streaming_mode","ingress_state","auto_restart","loop_video","total_views","total_watch_seconds","average_completion_rate","duration_seconds","file_extension","scheduled_start_at","scheduled_end_at")
+                     SELECT "id","video_id","title","description","original_filename","file_size","room_name","ingress_id","ingress_url","stream_key","video_url","streaming_active","streaming_status","uploaded_at","created_at","updated_at","streaming_mode","ingress_state","auto_restart","loop_video","total_views","total_watch_seconds","average_completion_rate","duration_seconds","file_extension","scheduled_start_at","scheduled_end_at" FROM "videos" /*application='Backendadmin'*/[0m
+  [1m[35m (0.3ms)[0m  [1m[35mDROP TABLE "videos" /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "videos" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "video_id" varchar NOT NULL, "title" varchar, "description" text, "original_filename" varchar, "file_size" bigint, "room_name" varchar, "ingress_id" varchar, "ingress_url" varchar, "stream_key" varchar, "video_url" varchar, "streaming_active" boolean DEFAULT 0, "streaming_status" varchar DEFAULT 'NOT_STARTED', "uploaded_at" datetime(6), "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "streaming_mode" integer DEFAULT 0 NOT NULL, "ingress_state" integer DEFAULT 0 NOT NULL, "auto_restart" boolean DEFAULT 0, "loop_video" boolean DEFAULT 0, "total_views" integer DEFAULT 0, "total_watch_seconds" integer DEFAULT 0, "average_completion_rate" float DEFAULT 0.0, "duration_seconds" integer, "file_extension" varchar, "scheduled_start_at" datetime(6), "scheduled_end_at" datetime(6)) /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_videos_on_room_name" ON "videos" ("room_name") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_videos_on_video_id" ON "videos" ("video_id") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_videos_on_streaming_mode" ON "videos" ("streaming_mode") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_videos_on_ingress_state" ON "videos" ("ingress_state") /*application='Backendadmin'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "videos" ("id","video_id","title","description","original_filename","file_size","room_name","ingress_id","ingress_url","stream_key","video_url","streaming_active","streaming_status","uploaded_at","created_at","updated_at","streaming_mode","ingress_state","auto_restart","loop_video","total_views","total_watch_seconds","average_completion_rate","duration_seconds","file_extension","scheduled_start_at","scheduled_end_at")
+                     SELECT "id","video_id","title","description","original_filename","file_size","room_name","ingress_id","ingress_url","stream_key","video_url","streaming_active","streaming_status","uploaded_at","created_at","updated_at","streaming_mode","ingress_state","auto_restart","loop_video","total_views","total_watch_seconds","average_completion_rate","duration_seconds","file_extension","scheduled_start_at","scheduled_end_at" FROM "avideos" /*application='Backendadmin'*/[0m
+  [1m[35m (0.2ms)[0m  [1m[35mDROP TABLE "avideos" /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='Backendadmin'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='Backendadmin'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "avideos" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "video_id" varchar NOT NULL, "title" varchar, "description" text, "original_filename" varchar, "file_size" bigint, "room_name" varchar, "ingress_id" varchar, "ingress_url" varchar, "stream_key" varchar, "video_url" varchar, "streaming_active" boolean DEFAULT 0, "streaming_status" varchar DEFAULT 'NOT_STARTED', "uploaded_at" datetime(6), "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "streaming_mode" integer DEFAULT 0 NOT NULL, "ingress_state" integer DEFAULT 0 NOT NULL, "auto_restart" boolean DEFAULT 0, "loop_video" boolean DEFAULT 0, "total_views" integer DEFAULT 0, "total_watch_seconds" integer DEFAULT 0, "average_completion_rate" float DEFAULT 0.0, "duration_seconds" integer, "file_extension" varchar, "scheduled_start_at" datetime(6), "scheduled_end_at" datetime(6)) /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_avideos_on_ingress_state" ON "avideos" ("ingress_state") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_avideos_on_streaming_mode" ON "avideos" ("streaming_mode") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "tindex_avideos_on_video_id" ON "avideos" ("video_id") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_avideos_on_room_name" ON "avideos" ("room_name") /*application='Backendadmin'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "avideos" ("id","video_id","title","description","original_filename","file_size","room_name","ingress_id","ingress_url","stream_key","video_url","streaming_active","streaming_status","uploaded_at","created_at","updated_at","streaming_mode","ingress_state","auto_restart","loop_video","total_views","total_watch_seconds","average_completion_rate","duration_seconds","file_extension","scheduled_start_at","scheduled_end_at")
+                     SELECT "id","video_id","title","description","original_filename","file_size","room_name","ingress_id","ingress_url","stream_key","video_url","streaming_active","streaming_status","uploaded_at","created_at","updated_at","streaming_mode","ingress_state","auto_restart","loop_video","total_views","total_watch_seconds","average_completion_rate","duration_seconds","file_extension","scheduled_start_at","scheduled_end_at" FROM "videos" /*application='Backendadmin'*/[0m
+  [1m[35m (0.3ms)[0m  [1m[35mDROP TABLE "videos" /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "videos" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "video_id" varchar NOT NULL, "title" varchar, "description" text, "original_filename" varchar, "file_size" bigint, "room_name" varchar NOT NULL, "ingress_id" varchar, "ingress_url" varchar, "stream_key" varchar, "video_url" varchar, "streaming_active" boolean DEFAULT 0, "streaming_status" varchar DEFAULT 'NOT_STARTED', "uploaded_at" datetime(6), "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "streaming_mode" integer DEFAULT 0 NOT NULL, "ingress_state" integer DEFAULT 0 NOT NULL, "auto_restart" boolean DEFAULT 0, "loop_video" boolean DEFAULT 0, "total_views" integer DEFAULT 0, "total_watch_seconds" integer DEFAULT 0, "average_completion_rate" float DEFAULT 0.0, "duration_seconds" integer, "file_extension" varchar, "scheduled_start_at" datetime(6), "scheduled_end_at" datetime(6)) /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_videos_on_room_name" ON "videos" ("room_name") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_videos_on_video_id" ON "videos" ("video_id") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_videos_on_streaming_mode" ON "videos" ("streaming_mode") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_videos_on_ingress_state" ON "videos" ("ingress_state") /*application='Backendadmin'*/[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[32mINSERT INTO "videos" ("id","video_id","title","description","original_filename","file_size","room_name","ingress_id","ingress_url","stream_key","video_url","streaming_active","streaming_status","uploaded_at","created_at","updated_at","streaming_mode","ingress_state","auto_restart","loop_video","total_views","total_watch_seconds","average_completion_rate","duration_seconds","file_extension","scheduled_start_at","scheduled_end_at")
+                     SELECT "id","video_id","title","description","original_filename","file_size","room_name","ingress_id","ingress_url","stream_key","video_url","streaming_active","streaming_status","uploaded_at","created_at","updated_at","streaming_mode","ingress_state","auto_restart","loop_video","total_views","total_watch_seconds","average_completion_rate","duration_seconds","file_extension","scheduled_start_at","scheduled_end_at" FROM "avideos" /*application='Backendadmin'*/[0m
+  [1m[35m (2.7ms)[0m  [1m[35mDROP TABLE "avideos" /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='Backendadmin'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA foreign_keys /*application='Backendadmin'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "aviewing_sessions" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "video_id" integer NOT NULL, "viewer_identity" varchar, "viewer_ip" varchar, "room_name" varchar, "started_at" datetime(6), "ended_at" datetime(6), "duration_seconds" integer DEFAULT 0, "quality_switches" integer DEFAULT 0, "average_quality" varchar, "average_bitrate" float, "buffering_events" integer DEFAULT 0, "connection_drops" integer DEFAULT 0, "quality_timeline" json, "metadata" json, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aviewing_sessions_on_video_id_and_started_at" ON "aviewing_sessions" ("video_id", "started_at") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aviewing_sessions_on_started_at" ON "aviewing_sessions" ("started_at") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aviewing_sessions_on_viewer_identity" ON "aviewing_sessions" ("viewer_identity") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aviewing_sessions_on_video_id" ON "aviewing_sessions" ("video_id") /*application='Backendadmin'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "aviewing_sessions" ("id","video_id","viewer_identity","viewer_ip","room_name","started_at","ended_at","duration_seconds","quality_switches","average_quality","average_bitrate","buffering_events","connection_drops","quality_timeline","metadata","created_at","updated_at")
+                     SELECT "id","video_id","viewer_identity","viewer_ip","room_name","started_at","ended_at","duration_seconds","quality_switches","average_quality","average_bitrate","buffering_events","connection_drops","quality_timeline","metadata","created_at","updated_at" FROM "viewing_sessions" /*application='Backendadmin'*/[0m
+  [1m[35m (0.5ms)[0m  [1m[35mDROP TABLE "viewing_sessions" /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "viewing_sessions" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "video_id" integer NOT NULL, "viewer_identity" varchar NOT NULL, "viewer_ip" varchar, "room_name" varchar, "started_at" datetime(6), "ended_at" datetime(6), "duration_seconds" integer DEFAULT 0, "quality_switches" integer DEFAULT 0, "average_quality" varchar, "average_bitrate" float, "buffering_events" integer DEFAULT 0, "connection_drops" integer DEFAULT 0, "quality_timeline" json, "metadata" json, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_20ad626617"
+FOREIGN KEY ("video_id")
+  REFERENCES "videos" ("id")
+) /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_video_id" ON "viewing_sessions" ("video_id") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_viewer_identity" ON "viewing_sessions" ("viewer_identity") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_started_at" ON "viewing_sessions" ("started_at") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_video_id_and_started_at" ON "viewing_sessions" ("video_id", "started_at") /*application='Backendadmin'*/[0m
+  [1m[35mSQL (0.1ms)[0m  [1m[32mINSERT INTO "viewing_sessions" ("id","video_id","viewer_identity","viewer_ip","room_name","started_at","ended_at","duration_seconds","quality_switches","average_quality","average_bitrate","buffering_events","connection_drops","quality_timeline","metadata","created_at","updated_at")
+                     SELECT "id","video_id","viewer_identity","viewer_ip","room_name","started_at","ended_at","duration_seconds","quality_switches","average_quality","average_bitrate","buffering_events","connection_drops","quality_timeline","metadata","created_at","updated_at" FROM "aviewing_sessions" /*application='Backendadmin'*/[0m
+  [1m[35m (0.3ms)[0m  [1m[35mDROP TABLE "aviewing_sessions" /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_ended_at" ON "viewing_sessions" ("ended_at") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_updated_at" ON "viewing_sessions" ("updated_at") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_video_viewer_end" ON "viewing_sessions" ("video_id", "viewer_identity", "ended_at") /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250913182130') RETURNING "version" /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (1.9ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mVideo Exists? (8.0ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."video_id" = 'smoke_e49c0fec' LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mVideo Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."room_name" = 'room-smoke-50482eee' LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mVideo Create (0.2ms)[0m  [1m[32mINSERT INTO "videos" ("video_id", "title", "description", "original_filename", "file_size", "room_name", "ingress_id", "ingress_url", "stream_key", "video_url", "streaming_active", "streaming_status", "uploaded_at", "created_at", "updated_at", "streaming_mode", "ingress_state", "auto_restart", "loop_video", "total_views", "total_watch_seconds", "average_completion_rate", "duration_seconds", "file_extension", "scheduled_start_at", "scheduled_end_at") VALUES ('smoke_e49c0fec', 'Smoke Test', '', 'test.mp4', 4194304, 'room-smoke-50482eee', NULL, NULL, NULL, 'http://localhost:3000/videos/test.mp4', 0, 'NOT_STARTED', '2025-09-13 18:09:53.299884', '2025-09-13 18:09:53.356203', '2025-09-13 18:09:53.356203', 0, 0, 0, 0, 0, 0, 0.0, NULL, 'mp4', NULL, NULL) RETURNING "id" /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.9ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (1.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ app/models/viewing_session.rb:21:in 'ViewingSession.start_session'
+  [1m[36mViewingSession Create (5.5ms)[0m  [1m[32mINSERT INTO "viewing_sessions" ("video_id", "viewer_identity", "viewer_ip", "room_name", "started_at", "ended_at", "duration_seconds", "quality_switches", "average_quality", "average_bitrate", "buffering_events", "connection_drops", "quality_timeline", "metadata", "created_at", "updated_at") VALUES (1, 'smoke-viewer-43a6a910', '127.0.0.1', 'room-smoke-50482eee', '2025-09-13 18:09:53.382344', NULL, 0, 0, NULL, NULL, 0, 0, NULL, '{"smoke":true}', '2025-09-13 18:09:53.411722', '2025-09-13 18:09:53.411722') RETURNING "id" /*application='Backendadmin'*/[0m
+  ↳ app/models/viewing_session.rb:21:in 'ViewingSession.start_session'
+  [1m[36mVideo Update All (0.3ms)[0m  [1m[33mUPDATE "videos" SET "total_views" = COALESCE("total_views", 0) + 1 WHERE "videos"."id" = 1 /*application='Backendadmin'*/[0m
+  ↳ app/models/viewing_session.rb:21:in 'ViewingSession.start_session'
+  [1m[36mTRANSACTION (1.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ app/models/viewing_session.rb:21:in 'ViewingSession.start_session'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ app/models/viewing_session.rb:56:in 'ViewingSession#track_quality_change'
+  [1m[36mViewingSession Load (0.7ms)[0m  [1m[34mSELECT "viewing_sessions".* FROM "viewing_sessions" WHERE "viewing_sessions"."id" = 1 LIMIT 1  /*application='Backendadmin'*/[0m
+  ↳ app/models/viewing_session.rb:56:in 'ViewingSession#track_quality_change'
+  [1m[36mViewingSession Update (0.1ms)[0m  [1m[33mUPDATE "viewing_sessions" SET "quality_switches" = 1, "quality_timeline" = '[{"timestamp":"2025-09-13T18:09:53.437Z","from":"720p","to":"1080p"}]', "updated_at" = '2025-09-13 18:09:53.449630' WHERE "viewing_sessions"."id" = 1 /*application='Backendadmin'*/[0m
+  ↳ app/models/viewing_session.rb:67:in 'block in ViewingSession#track_quality_change'
+  [1m[36mTRANSACTION (0.5ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ app/models/viewing_session.rb:56:in 'ViewingSession#track_quality_change'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ app/models/viewing_session.rb:76:in 'ViewingSession#track_buffering'
+  [1m[36mViewingSession Load (0.8ms)[0m  [1m[34mSELECT "viewing_sessions".* FROM "viewing_sessions" WHERE "viewing_sessions"."id" = 1 LIMIT 1  /*application='Backendadmin'*/[0m
+  ↳ app/models/viewing_session.rb:76:in 'ViewingSession#track_buffering'
+  [1m[36mViewingSession Update (0.2ms)[0m  [1m[33mUPDATE "viewing_sessions" SET "buffering_events" = 1, "metadata" = '{"smoke":true,"buffer_log":[{"timestamp":"2025-09-13T18:09:53.466Z","duration_ms":350}]}', "updated_at" = '2025-09-13 18:09:53.467164' WHERE "viewing_sessions"."id" = 1 /*application='Backendadmin'*/[0m
+  ↳ app/models/viewing_session.rb:87:in 'block in ViewingSession#track_buffering'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ app/models/viewing_session.rb:76:in 'ViewingSession#track_buffering'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ app/models/viewing_session.rb:93:in 'ViewingSession#track_connection_drop'
+  [1m[36mViewingSession Load (7.7ms)[0m  [1m[34mSELECT "viewing_sessions".* FROM "viewing_sessions" WHERE "viewing_sessions"."id" = 1 LIMIT 1  /*application='Backendadmin'*/[0m
+  ↳ app/models/viewing_session.rb:93:in 'ViewingSession#track_connection_drop'
+  [1m[36mViewingSession Update (0.0ms)[0m  [1m[33mUPDATE "viewing_sessions" SET "connection_drops" = 1, "metadata" = '{"smoke":true,"buffer_log":[{"timestamp":"2025-09-13T18:09:53.466Z","duration_ms":350}],"drop_log":[{"timestamp":"2025-09-13T18:09:53.479Z","reason":"test-drop"}]}', "updated_at" = '2025-09-13 18:09:53.479664' WHERE "viewing_sessions"."id" = 1 /*application='Backendadmin'*/[0m
+  ↳ app/models/viewing_session.rb:104:in 'block in ViewingSession#track_connection_drop'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ app/models/viewing_session.rb:93:in 'ViewingSession#track_connection_drop'
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ app/models/viewing_session.rb:35:in 'ViewingSession#end_session'
+  [1m[36mViewingSession Load (11.7ms)[0m  [1m[34mSELECT "viewing_sessions".* FROM "viewing_sessions" WHERE "viewing_sessions"."id" = 1 LIMIT 1  /*application='Backendadmin'*/[0m
+  ↳ app/models/viewing_session.rb:35:in 'ViewingSession#end_session'
+  [1m[36mViewingSession Update (0.0ms)[0m  [1m[33mUPDATE "viewing_sessions" SET "ended_at" = '2025-09-13 18:09:53.496996', "quality_switches" = 2, "average_quality" = '1080p', "average_bitrate" = 1800.5, "updated_at" = '2025-09-13 18:09:53.498269' WHERE "viewing_sessions"."id" = 1 /*application='Backendadmin'*/[0m
+  ↳ app/models/viewing_session.rb:50:in 'block in ViewingSession#end_session'
+  [1m[36mVideo Load (0.2ms)[0m  [1m[34mSELECT "videos".* FROM "videos" WHERE "videos"."id" = 1 LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ app/models/viewing_session.rb:143:in 'ViewingSession#update_video_analytics'
+  [1m[36mViewingSession Sum (0.1ms)[0m  [1m[34mSELECT SUM("viewing_sessions"."duration_seconds") FROM "viewing_sessions" WHERE "viewing_sessions"."video_id" = 1 AND (ended_at IS NOT NULL) /*application='Backendadmin'*/[0m
+  ↳ app/models/video.rb:79:in 'Video#update_analytics'
+  [1m[36mViewingSession Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "viewing_sessions" WHERE "viewing_sessions"."video_id" = 1 /*application='Backendadmin'*/[0m
+  ↳ app/models/video.rb:233:in 'Video#calculate_completion_rate'
+  [1m[36mVideo Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."room_name" = 'room-smoke-50482eee' AND "videos"."id" != 1 LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ app/models/video.rb:78:in 'Video#update_analytics'
+  [1m[36mTRANSACTION (0.6ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ app/models/viewing_session.rb:35:in 'ViewingSession#end_session'
+  [1m[36mVideo Load (0.1ms)[0m  [1m[34mSELECT "videos".* FROM "videos" WHERE "videos"."id" = 1 LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mVideo Load (3.8ms)[0m  [1m[34mSELECT "videos".* FROM "videos" /*application='Backendadmin'*/[0m
+  [1m[36mVideo Load (1.6ms)[0m  [1m[34mSELECT "videos".* FROM "videos" /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mViewingSession Load (0.3ms)[0m  [1m[34mSELECT "viewing_sessions".* FROM "viewing_sessions" WHERE "viewing_sessions"."video_id" = 1 /*application='Backendadmin'*/[0m
+  [1m[36mViewingSession Destroy (0.3ms)[0m  [1m[31mDELETE FROM "viewing_sessions" WHERE "viewing_sessions"."id" = 1 /*application='Backendadmin'*/[0m
+  [1m[36mVideo Destroy (0.3ms)[0m  [1m[31mDELETE FROM "videos" WHERE "videos"."id" = 1 /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mVideo Load (1.5ms)[0m  [1m[34mSELECT "videos".* FROM "videos" /*application='Backendadmin'*/[0m
+  [1m[36mVideo Load (1.4ms)[0m  [1m[34mSELECT "videos".* FROM "videos" /*application='Backendadmin'*/[0m
+  [1m[36mVideo Count (1.6ms)[0m  [1m[34mSELECT COUNT(*) FROM "videos" /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.2ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.2ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backendadmin'*/[0m
+Migrating to AddHlsFieldsToVideos (20250914034917)
+  [1m[36mTRANSACTION (0.3ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[35m (1.1ms)[0m  [1m[35mALTER TABLE "videos" ADD "hls_ready" boolean DEFAULT 0 /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mALTER TABLE "videos" ADD "hls_path" varchar /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mALTER TABLE "videos" ADD "dash_ready" boolean DEFAULT 0 /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mALTER TABLE "videos" ADD "dash_path" varchar /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mALTER TABLE "videos" ADD "transcoding_status" varchar DEFAULT 'pending' /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mALTER TABLE "videos" ADD "transcoding_progress" integer DEFAULT 0 /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Create (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" ("version") VALUES ('20250914034917') RETURNING "version" /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backendadmin'*/[0m
+  [1m[36mVideo Load (0.0ms)[0m  [1m[34mSELECT "videos".* FROM "videos" WHERE "videos"."video_id" = 'video_47d7b61dfc9d2e5a' LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ lib/tasks/video_transcode.rake:4:in 'block (2 levels) in <main>'
+  [1m[36mVideo Load (2.1ms)[0m  [1m[34mSELECT "videos".* FROM "videos" /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mVideo Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."video_id" = 'test_hls_video' LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mVideo Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."room_name" = 'test-hls-room' LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mVideo Create (0.3ms)[0m  [1m[32mINSERT INTO "videos" ("video_id", "title", "description", "original_filename", "file_size", "room_name", "ingress_id", "ingress_url", "stream_key", "video_url", "streaming_active", "streaming_status", "uploaded_at", "created_at", "updated_at", "streaming_mode", "ingress_state", "auto_restart", "loop_video", "total_views", "total_watch_seconds", "average_completion_rate", "duration_seconds", "file_extension", "scheduled_start_at", "scheduled_end_at", "hls_ready", "hls_path", "dash_ready", "dash_path", "transcoding_status", "transcoding_progress") VALUES ('test_hls_video', 'Test HLS Video', NULL, NULL, 157895, 'test-hls-room', NULL, NULL, NULL, NULL, 0, 'NOT_STARTED', '2025-09-14 03:56:30.717958', '2025-09-14 03:56:30.732534', '2025-09-14 03:56:30.732534', 0, 0, 0, 0, 0, 0, 0.0, NULL, 'mp4', NULL, NULL, 0, NULL, 0, NULL, 'pending', 0) RETURNING "id" /*application='Backendadmin'*/[0m
+  [1m[36mVideo Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."room_name" = 'test-hls-room' AND "videos"."id" != 2 LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ app/models/video.rb:208:in 'Video#extract_video_duration'
+  [1m[36mVideo Update (0.0ms)[0m  [1m[33mUPDATE "videos" SET "updated_at" = '2025-09-14 03:56:31.097817', "duration_seconds" = 10 WHERE "videos"."id" = 2 /*application='Backendadmin'*/[0m
+  ↳ app/models/video.rb:208:in 'Video#extract_video_duration'
+  [1m[36mTRANSACTION (0.2ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mVideo Load (0.1ms)[0m  [1m[34mSELECT "videos".* FROM "videos" WHERE "videos"."video_id" = 'test_hls_video' LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ lib/tasks/video_transcode.rake:4:in 'block (2 levels) in <main>'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ lib/tasks/video_transcode.rake:55:in 'block (2 levels) in <main>'
+  [1m[36mVideo Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."room_name" = 'test-hls-room' AND "videos"."id" != 2 LIMIT 1 /*application='Backendadmin'*/[0m
+  ↳ lib/tasks/video_transcode.rake:55:in 'block (2 levels) in <main>'
+  [1m[36mVideo Update (0.0ms)[0m  [1m[33mUPDATE "videos" SET "updated_at" = '2025-09-14 03:56:51.712634', "hls_ready" = 1, "hls_path" = '/videos/hls/test_hls_video/master.m3u8' WHERE "videos"."id" = 2 /*application='Backendadmin'*/[0m
+  ↳ lib/tasks/video_transcode.rake:55:in 'block (2 levels) in <main>'
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  ↳ lib/tasks/video_transcode.rake:55:in 'block (2 levels) in <main>'
+  [1m[36mVideo Load (1.5ms)[0m  [1m[34mSELECT "videos".* FROM "videos" /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mViewingSession Load (0.0ms)[0m  [1m[34mSELECT "viewing_sessions".* FROM "viewing_sessions" WHERE "viewing_sessions"."video_id" = 2 /*application='Backendadmin'*/[0m
+  [1m[36mVideo Destroy (0.2ms)[0m  [1m[31mDELETE FROM "videos" WHERE "videos"."id" = 2 /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mVideo Count (1.5ms)[0m  [1m[34mSELECT COUNT(*) FROM "videos" /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mVideo Exists? (0.7ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."video_id" = 'test_hls_video' LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mVideo Exists? (0.0ms)[0m  [1m[34mSELECT 1 AS one FROM "videos" WHERE "videos"."room_name" = 'test-hls-room' LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mVideo Create (0.1ms)[0m  [1m[32mINSERT INTO "videos" ("video_id", "title", "description", "original_filename", "file_size", "room_name", "ingress_id", "ingress_url", "stream_key", "video_url", "streaming_active", "streaming_status", "uploaded_at", "created_at", "updated_at", "streaming_mode", "ingress_state", "auto_restart", "loop_video", "total_views", "total_watch_seconds", "average_completion_rate", "duration_seconds", "file_extension", "scheduled_start_at", "scheduled_end_at", "hls_ready", "hls_path", "dash_ready", "dash_path", "transcoding_status", "transcoding_progress") VALUES ('test_hls_video', 'Test HLS Video', NULL, NULL, 1024000, 'test-hls-room', NULL, NULL, NULL, NULL, 0, 'NOT_STARTED', '2025-09-14 04:07:10.394730', '2025-09-14 04:07:10.414432', '2025-09-14 04:07:10.414432', 0, 0, 0, 0, 0, 0, 0.0, NULL, 'mp4', NULL, NULL, 1, '/videos/test_hls_video/hls', 0, NULL, 'completed', 0) RETURNING "id" /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mVideo Load (1.6ms)[0m  [1m[34mSELECT "videos".* FROM "videos" /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mViewingSession Load (0.0ms)[0m  [1m[34mSELECT "viewing_sessions".* FROM "viewing_sessions" WHERE "viewing_sessions"."video_id" = 3 /*application='Backendadmin'*/[0m
+  [1m[36mVideo Destroy (0.2ms)[0m  [1m[31mDELETE FROM "videos" WHERE "videos"."id" = 3 /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[36mVideo Load (1.4ms)[0m  [1m[34mSELECT "videos".* FROM "videos" /*application='Backendadmin'*/[0m
+  [1m[36mVideo Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "videos" /*application='Backendadmin'*/[0m
+  [1m[36mVideo Load (2.0ms)[0m  [1m[34mSELECT "videos".* FROM "videos" /*application='Backendadmin'*/[0m
+  [1m[36mVideo Count (5.4ms)[0m  [1m[34mSELECT COUNT(*) FROM "videos" /*application='Backendadmin'*/[0m
+  ↳ lib/tasks/video_cleanup.rake:50:in 'block (2 levels) in <main>'
+  [1m[36mViewingSession Count (0.0ms)[0m  [1m[34mSELECT COUNT(*) FROM "viewing_sessions" /*application='Backendadmin'*/[0m
+  ↳ lib/tasks/video_cleanup.rake:51:in 'block (2 levels) in <main>'
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "pins" /*application='Backendadmin'*/[0m
+  [1m[35m (0.5ms)[0m  [1m[35mCREATE TABLE "pins" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "title" varchar, "description" text, "latitude" decimal, "longitude" decimal, "address" varchar, "status" varchar, "user_name" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "videos" /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "videos" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "video_id" varchar NOT NULL, "title" varchar, "description" text, "original_filename" varchar, "file_size" bigint, "room_name" varchar NOT NULL, "ingress_id" varchar, "ingress_url" varchar, "stream_key" varchar, "video_url" varchar, "streaming_active" boolean DEFAULT 0, "streaming_status" varchar DEFAULT 'NOT_STARTED', "uploaded_at" datetime(6), "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, "streaming_mode" integer DEFAULT 0 NOT NULL, "ingress_state" integer DEFAULT 0 NOT NULL, "auto_restart" boolean DEFAULT 0, "loop_video" boolean DEFAULT 0, "total_views" integer DEFAULT 0, "total_watch_seconds" integer DEFAULT 0, "average_completion_rate" float DEFAULT 0.0, "duration_seconds" integer, "file_extension" varchar, "scheduled_start_at" datetime(6), "scheduled_end_at" datetime(6), "hls_ready" boolean DEFAULT 0, "hls_path" varchar, "dash_ready" boolean DEFAULT 0, "dash_path" varchar, "transcoding_status" varchar DEFAULT 'pending', "transcoding_progress" integer DEFAULT 0) /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_videos_on_ingress_state" ON "videos" ("ingress_state") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_videos_on_room_name" ON "videos" ("room_name") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_videos_on_streaming_mode" ON "videos" ("streaming_mode") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE UNIQUE INDEX "index_videos_on_video_id" ON "videos" ("video_id") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mDROP TABLE IF EXISTS "viewing_sessions" /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "viewing_sessions" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "video_id" integer NOT NULL, "viewer_identity" varchar NOT NULL, "viewer_ip" varchar, "room_name" varchar, "started_at" datetime(6), "ended_at" datetime(6), "duration_seconds" integer DEFAULT 0, "quality_switches" integer DEFAULT 0, "average_quality" varchar, "average_bitrate" float, "buffering_events" integer DEFAULT 0, "connection_drops" integer DEFAULT 0, "quality_timeline" json, "metadata" json, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_ended_at" ON "viewing_sessions" ("ended_at") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_started_at" ON "viewing_sessions" ("started_at") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_updated_at" ON "viewing_sessions" ("updated_at") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_video_id_and_started_at" ON "viewing_sessions" ("video_id", "started_at") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_video_viewer_end" ON "viewing_sessions" ("video_id", "viewer_identity", "ended_at") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_video_id" ON "viewing_sessions" ("video_id") /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_viewer_identity" ON "viewing_sessions" ("viewer_identity") /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.0ms)[0m  [1m[35mBEGIN immediate TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[35mSQL (0.5ms)[0m  [1m[35mPRAGMA foreign_keys /*application='Backendadmin'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = ON /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = OFF /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TEMPORARY TABLE "aviewing_sessions" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "video_id" integer NOT NULL, "viewer_identity" varchar NOT NULL, "viewer_ip" varchar, "room_name" varchar, "started_at" datetime(6), "ended_at" datetime(6), "duration_seconds" integer DEFAULT 0, "quality_switches" integer DEFAULT 0, "average_quality" varchar, "average_bitrate" float, "buffering_events" integer DEFAULT 0, "connection_drops" integer DEFAULT 0, "quality_timeline" json, "metadata" json, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aviewing_sessions_on_viewer_identity" ON "aviewing_sessions" ("viewer_identity") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aviewing_sessions_on_video_id" ON "aviewing_sessions" ("video_id") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aviewing_sessions_on_video_viewer_end" ON "aviewing_sessions" ("video_id", "viewer_identity", "ended_at") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aviewing_sessions_on_video_id_and_started_at" ON "aviewing_sessions" ("video_id", "started_at") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aviewing_sessions_on_updated_at" ON "aviewing_sessions" ("updated_at") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aviewing_sessions_on_started_at" ON "aviewing_sessions" ("started_at") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "tindex_aviewing_sessions_on_ended_at" ON "aviewing_sessions" ("ended_at") /*application='Backendadmin'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "aviewing_sessions" ("id","video_id","viewer_identity","viewer_ip","room_name","started_at","ended_at","duration_seconds","quality_switches","average_quality","average_bitrate","buffering_events","connection_drops","quality_timeline","metadata","created_at","updated_at")
+                     SELECT "id","video_id","viewer_identity","viewer_ip","room_name","started_at","ended_at","duration_seconds","quality_switches","average_quality","average_bitrate","buffering_events","connection_drops","quality_timeline","metadata","created_at","updated_at" FROM "viewing_sessions" /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "viewing_sessions" /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE TABLE "viewing_sessions" ("id" integer PRIMARY KEY AUTOINCREMENT NOT NULL, "video_id" integer NOT NULL, "viewer_identity" varchar NOT NULL, "viewer_ip" varchar, "room_name" varchar, "started_at" datetime(6), "ended_at" datetime(6), "duration_seconds" integer DEFAULT 0, "quality_switches" integer DEFAULT 0, "average_quality" varchar, "average_bitrate" float, "buffering_events" integer DEFAULT 0, "connection_drops" integer DEFAULT 0, "quality_timeline" json, "metadata" json, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL, CONSTRAINT "fk_rails_20ad626617"
+FOREIGN KEY ("video_id")
+  REFERENCES "videos" ("id")
+) /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_ended_at" ON "viewing_sessions" ("ended_at") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_started_at" ON "viewing_sessions" ("started_at") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_updated_at" ON "viewing_sessions" ("updated_at") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_video_id_and_started_at" ON "viewing_sessions" ("video_id", "started_at") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_video_viewer_end" ON "viewing_sessions" ("video_id", "viewer_identity", "ended_at") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_video_id" ON "viewing_sessions" ("video_id") /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mCREATE INDEX "index_viewing_sessions_on_viewer_identity" ON "viewing_sessions" ("viewer_identity") /*application='Backendadmin'*/[0m
+  [1m[35mSQL (0.0ms)[0m  [1m[32mINSERT INTO "viewing_sessions" ("id","video_id","viewer_identity","viewer_ip","room_name","started_at","ended_at","duration_seconds","quality_switches","average_quality","average_bitrate","buffering_events","connection_drops","quality_timeline","metadata","created_at","updated_at")
+                     SELECT "id","video_id","viewer_identity","viewer_ip","room_name","started_at","ended_at","duration_seconds","quality_switches","average_quality","average_bitrate","buffering_events","connection_drops","quality_timeline","metadata","created_at","updated_at" FROM "aviewing_sessions" /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mDROP TABLE "aviewing_sessions" /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA defer_foreign_keys = 0 /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[35mPRAGMA foreign_keys = 1 /*application='Backendadmin'*/[0m
+  [1m[36mTRANSACTION (0.1ms)[0m  [1m[35mCOMMIT TRANSACTION /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "schema_migrations" ("version" varchar NOT NULL PRIMARY KEY) /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES (20250914034917) /*application='Backendadmin'*/[0m
+  [1m[35m (0.0ms)[0m  [1m[32mINSERT INTO "schema_migrations" (version) VALUES
+(20250913182130),
+(20250913171512),
+(20250913171427),
+(20250913130319),
+(20250913103851); /*application='Backendadmin'*/[0m
+  [1m[35m (0.1ms)[0m  [1m[35mCREATE TABLE "ar_internal_metadata" ("key" varchar NOT NULL PRIMARY KEY, "value" varchar, "created_at" datetime(6) NOT NULL, "updated_at" datetime(6) NOT NULL) /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Create (0.1ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('environment', 'development', '2025-09-14 10:36:00.821839', '2025-09-14 10:36:00.821841') RETURNING "key" /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'schema_sha1' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Create (0.0ms)[0m  [1m[32mINSERT INTO "ar_internal_metadata" ("key", "value", "created_at", "updated_at") VALUES ('schema_sha1', '7b65e316518a79c45e219ba815d61a48c84bf8b3', '2025-09-14 10:36:00.822907', '2025-09-14 10:36:00.822907') RETURNING "key" /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::InternalMetadata Load (0.0ms)[0m  [1m[34mSELECT * FROM "ar_internal_metadata" WHERE "ar_internal_metadata"."key" = 'environment' ORDER BY "ar_internal_metadata"."key" ASC LIMIT 1 /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backendadmin'*/[0m
+  [1m[36mActiveRecord::SchemaMigration Load (0.0ms)[0m  [1m[34mSELECT "schema_migrations"."version" FROM "schema_migrations" ORDER BY "schema_migrations"."version" ASC /*application='Backendadmin'*/[0m
