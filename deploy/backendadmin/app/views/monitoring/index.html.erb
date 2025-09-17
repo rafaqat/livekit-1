@@ -1,0 +1,236 @@
+<div class="min-h-screen bg-gray-50">
+  <div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+      <div class="flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-gray-800">System Monitoring & Analytics</h1>
+        <div class="flex space-x-2">
+          <button onclick="refreshDashboard()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition">
+            Refresh
+          </button>
+          <%= link_to "Export Metrics", metrics_monitoring_index_path(format: :text), 
+              class: "bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg transition",
+              target: "_blank" %>
+        </div>
+      </div>
+    </div>
+
+    <% if @error %>
+      <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
+        <%= @error %>
+      </div>
+    <% end %>
+
+    <!-- Key Metrics Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600">Total Rooms</p>
+            <p class="text-3xl font-bold text-gray-900"><%= @stats[:total_rooms] %></p>
+            <p class="text-sm text-gray-500"><%= @stats[:active_rooms] %> active</p>
+          </div>
+          <div class="p-3 bg-blue-100 rounded-full">
+            <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600">Participants</p>
+            <p class="text-3xl font-bold text-gray-900"><%= @stats[:total_participants] %></p>
+            <p class="text-sm text-gray-500">Avg <%= @stats[:avg_participants_per_room] %>/room</p>
+          </div>
+          <div class="p-3 bg-green-100 rounded-full">
+            <svg class="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600">Capacity Usage</p>
+            <p class="text-3xl font-bold text-gray-900"><%= @stats[:capacity_usage] %>%</p>
+            <p class="text-sm text-gray-500"><%= @stats[:total_participants] %>/<%= @stats[:total_capacity] %></p>
+          </div>
+          <div class="p-3 bg-yellow-100 rounded-full">
+            <svg class="w-8 h-8 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.293a1 1 0 00-1.414 1.414L14.586 10l-1.293 1.293a1 1 0 101.414 1.414L16 11.414l1.293 1.293a1 1 0 001.414-1.414L17.414 10l1.293-1.293a1 1 0 00-1.414-1.414L16 8.586l-1.293-1.293z" clip-rule="evenodd"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-600">Active Recordings</p>
+            <p class="text-3xl font-bold text-gray-900"><%= @stats[:recording_sessions] %></p>
+            <p class="text-sm text-gray-500"><%= @stats[:streaming_inputs] %> inputs</p>
+          </div>
+          <div class="p-3 bg-red-100 rounded-full">
+            <svg class="w-8 h-8 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"></path>
+              <path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Performance Metrics -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <h2 class="text-xl font-semibold mb-4">System Performance</h2>
+        <div class="space-y-4">
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-sm font-medium text-gray-700">CPU Usage</span>
+              <span class="text-sm font-medium text-gray-700"><%= @performance[:cpu_usage] %>%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+              <div class="bg-blue-600 h-2.5 rounded-full" style="width: <%= @performance[:cpu_usage] %>%"></div>
+            </div>
+          </div>
+          
+          <div>
+            <div class="flex justify-between mb-1">
+              <span class="text-sm font-medium text-gray-700">Memory Usage</span>
+              <span class="text-sm font-medium text-gray-700"><%= @performance[:memory_usage] %>%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+              <div class="bg-green-600 h-2.5 rounded-full" style="width: <%= @performance[:memory_usage] %>%"></div>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-4 pt-2">
+            <div>
+              <p class="text-sm text-gray-600">Bandwidth In</p>
+              <p class="text-lg font-semibold"><%= @performance[:bandwidth_in] %> Mbps</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600">Bandwidth Out</p>
+              <p class="text-lg font-semibold"><%= @performance[:bandwidth_out] %> Mbps</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600">Avg Latency</p>
+              <p class="text-lg font-semibold"><%= @performance[:latency] %> ms</p>
+            </div>
+            <div>
+              <p class="text-sm text-gray-600">Packet Loss</p>
+              <p class="text-lg font-semibold"><%= @performance[:packet_loss] %>%</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-lg p-6">
+        <h2 class="text-xl font-semibold mb-4">Room Activity (24h)</h2>
+        <canvas id="roomChart" width="400" height="200"></canvas>
+      </div>
+    </div>
+
+    <!-- Detailed Room List -->
+    <div class="bg-white rounded-lg shadow-lg">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-xl font-semibold">Room Details</h2>
+      </div>
+      
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Room Name</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Participants</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Publishers</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Capacity</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Recording</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            <% (@rooms || []).each do |room| %>
+              <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 text-sm font-medium">
+                  <%= link_to room['name'], room_path(room['name']), class: "text-blue-600 hover:text-blue-900" %>
+                </td>
+                <td class="px-6 py-4 text-sm">
+                  <div class="flex items-center">
+                    <span class="mr-2"><%= room['num_participants'] || 0 %></span>
+                    <div class="w-24 bg-gray-200 rounded-full h-2">
+                      <div class="bg-green-600 h-2 rounded-full" style="width: <%= ((room['num_participants'] || 0).to_f / (room['max_participants'] || 1) * 100).round %>%"></div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 text-sm">
+                  <%= room['num_publishers'] || 0 %>
+                </td>
+                <td class="px-6 py-4 text-sm">
+                  <%= room['max_participants'] %>
+                </td>
+                <td class="px-6 py-4 text-sm">
+                  <span class="px-2 py-1 text-xs font-semibold rounded-full <%= room['active_recording'] ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800' %>">
+                    <%= room['active_recording'] ? 'Recording' : 'Idle' %>
+                  </span>
+                </td>
+                <td class="px-6 py-4 text-sm text-gray-500">
+                  <%= Time.at(room['creation_time'].to_i).strftime("%H:%M:%S") rescue "N/A" %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Room activity chart
+  const ctx = document.getElementById('roomChart').getContext('2d');
+  const roomChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: <%= raw @room_history[:labels].to_json %>,
+      datasets: [{
+        label: 'Rooms',
+        data: <%= raw @room_history[:rooms].to_json %>,
+        borderColor: 'rgb(59, 130, 246)',
+        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+        tension: 0.1
+      }, {
+        label: 'Participants',
+        data: <%= raw @room_history[:participants].to_json %>,
+        borderColor: 'rgb(34, 197, 94)',
+        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+        tension: 0.1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      }
+    }
+  });
+  
+  function refreshDashboard() {
+    window.location.reload();
+  }
+  
+  // Auto-refresh every 30 seconds
+  setTimeout(function() {
+    refreshDashboard();
+  }, 30000);
+</script>

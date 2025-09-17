@@ -1,0 +1,25 @@
+port: 7880
+rtc:
+  port_range_start: 50000
+  port_range_end: 60000
+  use_external_ip: false
+  # Use localhost for local testing
+  node_ip: 127.0.0.1
+
+keys:
+  APIkXxSQmAFmFTc: EdE9vI+y+b0NCO0nSUQGp1+W+LQYbHBKLlzqINaFDsU=
+
+room:
+  auto_create: true
+  empty_timeout: 300
+
+ingress:
+  rtmp_base_url: rtmp://localhost:1935/live
+  whip_base_url: http://localhost:8080/whip
+
+logging:
+  level: info
+  sample: false
+
+webhook:
+  urls: []

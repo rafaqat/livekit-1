@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Backendadmin" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <!-- Navigation -->
+    <nav class="bg-gray-800 text-white shadow-lg">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center py-4">
+          <div class="flex items-center space-x-8">
+            <%= link_to root_path, class: "text-xl font-bold" do %>
+              LiveKit Admin
+            <% end %>
+            <div class="flex space-x-4">
+              <%= link_to "Dashboard", root_path, class: "hover:text-gray-300 transition" %>
+              <%= link_to "Rooms", rooms_path, class: "hover:text-gray-300 transition" %>
+              <%= link_to "Videos", videos_path, class: "hover:text-gray-300 transition" %>
+              <%= link_to "Recording & Streaming", recordings_path, class: "hover:text-gray-300 transition" %>
+              <%= link_to "Monitoring", monitoring_index_path, class: "hover:text-gray-300 transition" %>
+            </div>
+          </div>
+          <div class="text-sm">
+            <span class="text-gray-400">Server:</span> 
+            <span class="font-mono"><%= ENV['LIVEKIT_SERVER_URL'] || 'livekit.lovedrop.live' %></span>
+          </div>
+        </div>
+      </div>
+    </nav>
+    
+    <!-- Flash Messages -->
+    <% if notice.present? %>
+      <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 relative" role="alert">
+        <span class="block sm:inline"><%= notice %></span>
+      </div>
+    <% end %>
+    <% if alert.present? %>
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 relative" role="alert">
+        <span class="block sm:inline"><%= alert %></span>
+      </div>
+    <% end %>
+    
+    <!-- Main Content -->
+    <main>
+      <%= yield %>
+    </main>
+  </body>
+</html>

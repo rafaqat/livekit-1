@@ -1,0 +1,101 @@
+#!/bin/bash
+set -e
+
+# Smoke test for the application
+# Tests key endpoints and functionality
+
+BASE_URL="${1:-https://admin.livekit.lovedrop.live}"
+
+echo "🔍 Running smoke tests for $BASE_URL"
+echo "================================"
+
+# Function to test endpoint
+test_endpoint() {
+    local path="$1"
+    local expected_status="$2"
+    local description="$3"
+    
+    echo -n "Testing $description ($path)... "
+    status=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL$path")
+    
+    if [ "$status" = "$expected_status" ]; then
+        echo "✅ OK (HTTP $status)"
+        return 0
+    else
+        echo "❌ FAILED (Expected $expected_status, got $status)"
+        return 1
+    fi
+}
+
+# Function to test database connectivity
+test_database() {
+    echo -n "Testing database connectivity... "
+    if kamal app exec 'bin/rails runner "puts ActiveRecord::Base.connection.active?"' 2>/dev/null | grep -q "true"; then
+        echo "✅ OK"
+        return 0
+    else
+        echo "❌ FAILED"
+        return 1
+    fi
+}
+
+# Function to test migrations
+test_migrations() {
+    echo -n "Testing database migrations... "
+    tables=$(kamal app exec 'bin/rails runner "puts ActiveRecord::Base.connection.tables.join(\",\")"' 2>/dev/null)
+    
+    if echo "$tables" | grep -q "videos"; then
+        echo "✅ OK (videos table exists)"
+        return 0
+    else
+        echo "❌ FAILED (videos table missing)"
+        echo "  Tables found: $tables"
+        return 1
+    fi
+}
+
+# Initialize test results
+total_tests=0
+failed_tests=0
+
+# Run tests
+run_test() {
+    ((total_tests++))
+    if ! "$@"; then
+        ((failed_tests++))
+    fi
+}
+
+echo ""
+echo "1. Health Check Tests"
+echo "---------------------"
+run_test test_endpoint "/up" "200" "Health check"
+run_test test_endpoint "/" "200" "Root page"
+
+echo ""
+echo "2. Database Tests"
+echo "-----------------"
+run_test test_database
+run_test test_migrations
+
+echo ""
+echo "3. Application Endpoints"
+echo "------------------------"
+run_test test_endpoint "/videos" "200" "Videos index"
+run_test test_endpoint "/pins" "200" "Pins index"
+
+echo ""
+echo "4. Asset Pipeline"
+echo "-----------------"
+run_test test_endpoint "/assets/application.css" "200" "CSS assets"
+run_test test_endpoint "/assets/application.js" "200" "JS assets"
+
+echo ""
+echo "================================"
+if [ $failed_tests -eq 0 ]; then
+    echo "✅ All tests passed! ($total_tests/$total_tests)"
+    exit 0
+else
+    echo "❌ $failed_tests/$total_tests tests failed"
+    exit 1
+fi

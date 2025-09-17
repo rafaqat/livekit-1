@@ -1,0 +1,209 @@
+<div class="min-h-screen bg-gray-50">
+  <div class="container mx-auto px-4 py-8">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+      <div class="flex justify-between items-center">
+        <h1 class="text-3xl font-bold text-gray-800">Recording & Streaming Management</h1>
+        <div class="flex space-x-2">
+          <%= link_to "New Recording", new_egress_recordings_path, class: "bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition" %>
+          <%= link_to "New Stream Input", new_ingress_recordings_path, class: "bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition" %>
+        </div>
+      </div>
+    </div>
+
+    <% if @error %>
+      <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
+        <%= @error %>
+      </div>
+    <% end %>
+
+    <!-- Active Egresses (Recordings/Streams Out) -->
+    <div class="bg-white rounded-lg shadow-lg mb-8">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-xl font-semibold">Active Recordings & Streams (Egress)</h2>
+      </div>
+      
+      <% if @egresses && @egresses.any? %>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Room</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Started</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Layout</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <% @egresses.each do |egress| %>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4 text-sm font-mono">
+                    <%= egress['egressId'] %>
+                  </td>
+                  <td class="px-6 py-4 text-sm">
+                    <%= egress['roomName'] || 'N/A' %>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                      <%= egress['request']&.keys&.first&.gsub('_', ' ')&.capitalize || 'Unknown' %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="px-2 py-1 text-xs font-semibold rounded-full <%= egress_status_class(egress['status']) %>">
+                      <%= egress['status'] %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-sm">
+                    <%= Time.at(egress['startedAt'].to_i).strftime("%H:%M:%S") rescue "N/A" %>
+                  </td>
+                  <td class="px-6 py-4 text-sm">
+                    <% if egress['request']&.dig('roomComposite', 'layout') %>
+                      <select onchange="updateLayout('<%= egress['egressId'] %>', this.value)" class="text-sm border rounded px-2 py-1">
+                        <% ['speaker-dark', 'speaker-light', 'grid-dark', 'grid-light'].each do |layout| %>
+                          <option value="<%= layout %>" <%= 'selected' if egress['request']['roomComposite']['layout'] == layout %>><%= layout %></option>
+                        <% end %>
+                      </select>
+                    <% else %>
+                      N/A
+                    <% end %>
+                  </td>
+                  <td class="px-6 py-4 text-sm">
+                    <%= link_to "Stop", stop_egress_recording_path(egress['egressId']), 
+                        method: :delete, 
+                        data: { confirm: "Stop this recording?" }, 
+                        class: "text-red-600 hover:text-red-900" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <div class="text-center py-8 text-gray-500">
+          No active recordings or streams
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Active Ingresses (Stream Inputs) -->
+    <div class="bg-white rounded-lg shadow-lg">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-xl font-semibold">Active Stream Inputs (Ingress)</h2>
+      </div>
+      
+      <% if @ingresses && @ingresses.any? %>
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Room</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stream URL</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stream Key</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+              <% @ingresses.each do |ingress| %>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-6 py-4 text-sm font-medium">
+                    <%= ingress['name'] %>
+                  </td>
+                  <td class="px-6 py-4 text-sm">
+                    <%= ingress['roomName'] %>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+                      <%= ingress['inputType'] %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="px-2 py-1 text-xs font-semibold rounded-full <%= ingress_status_class(ingress['state']) %>">
+                      <%= ingress['state'] %>
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-xs font-mono">
+                    <%= ingress['url'] %>
+                  </td>
+                  <td class="px-6 py-4">
+                    <button onclick="copyToClipboard('<%= ingress['streamKey'] %>')" class="text-xs font-mono bg-gray-100 px-2 py-1 rounded hover:bg-gray-200">
+                      <%= ingress['streamKey']&.first(8) %>...
+                    </button>
+                  </td>
+                  <td class="px-6 py-4 text-sm">
+                    <%= link_to "Delete", delete_ingress_recording_path(ingress['ingressId']), 
+                        method: :delete, 
+                        data: { confirm: "Delete this ingress?" }, 
+                        class: "text-red-600 hover:text-red-900" %>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      <% else %>
+        <div class="text-center py-8 text-gray-500">
+          No active stream inputs
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<script>
+  function updateLayout(egressId, layout) {
+    fetch(`/recordings/${egressId}/update_layout`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({ layout: layout })
+    }).then(() => window.location.reload());
+  }
+  
+  function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      alert('Stream key copied to clipboard');
+    });
+  }
+</script>
+
+<%
+  def egress_status_class(status)
+    case status
+    when 'EGRESS_STARTING'
+      'bg-yellow-100 text-yellow-800'
+    when 'EGRESS_ACTIVE'
+      'bg-green-100 text-green-800'
+    when 'EGRESS_ENDING'
+      'bg-orange-100 text-orange-800'
+    when 'EGRESS_COMPLETE'
+      'bg-gray-100 text-gray-800'
+    when 'EGRESS_FAILED'
+      'bg-red-100 text-red-800'
+    else
+      'bg-gray-100 text-gray-800'
+    end
+  end
+  
+  def ingress_status_class(state)
+    case state
+    when 'ENDPOINT_INACTIVE'
+      'bg-gray-100 text-gray-800'
+    when 'ENDPOINT_BUFFERING'
+      'bg-yellow-100 text-yellow-800'
+    when 'ENDPOINT_PUBLISHING'
+      'bg-green-100 text-green-800'
+    when 'ENDPOINT_ERROR'
+      'bg-red-100 text-red-800'
+    else
+      'bg-gray-100 text-gray-800'
+    end
+  end
+%>

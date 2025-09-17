@@ -1,0 +1,999 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="container mx-auto px-4">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+      <h1 class="text-3xl font-bold text-gray-800 mb-2">LiveKit Streaming Test Suite</h1>
+      <p class="text-gray-600">Test video streaming with various configurations and network conditions</p>
+    </div>
+    
+    <!-- Main Test Interface -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <!-- Left Panel: Video Selection & Config -->
+      <div class="lg:col-span-1">
+        <!-- Video Selector -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+          <h2 class="text-xl font-semibold mb-4">Select Video</h2>
+          <select id="video-selector" class="w-full p-3 border rounded-lg">
+            <option value="">-- Select a video --</option>
+            <% @videos.each do |video| %>
+              <option value="<%= video['video_id'] %>" 
+                      data-title="<%= video['title'] %>"
+                      data-size="<%= video['file_size_mb'] %>"
+                      data-streaming="<%= video['streaming_active'] %>">
+                <%= video['title'] %> (<%= video['file_size_mb'] %> MB)
+                <%= video['streaming_active'] ? '🔴' : '' %>
+              </option>
+            <% end %>
+          </select>
+          
+          <div id="video-info" class="mt-4 p-3 bg-gray-50 rounded hidden">
+            <p class="text-sm"><strong>Video ID:</strong> <span id="info-id"></span></p>
+            <p class="text-sm"><strong>Size:</strong> <span id="info-size"></span> MB</p>
+            <p class="text-sm"><strong>Status:</strong> <span id="info-status"></span></p>
+          </div>
+        </div>
+        
+        <!-- Test Configuration -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-xl font-semibold mb-4">Test Configuration</h2>
+          
+          <!-- Quality Preset -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Quality Preset</label>
+            <select id="quality-preset" class="w-full p-2 border rounded">
+              <% @test_configs[:quality_presets].each do |preset| %>
+                <option value="<%= preset[:id] %>"><%= preset[:name] %></option>
+              <% end %>
+            </select>
+          </div>
+          
+          <!-- Network Condition -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Network Condition</label>
+            <select id="network-condition" class="w-full p-2 border rounded">
+              <% @test_configs[:network_conditions].each do |condition| %>
+                <option value="<%= condition[:id] %>" 
+                        data-bandwidth="<%= condition[:bandwidth] %>"
+                        data-latency="<%= condition[:latency] %>"
+                        data-loss="<%= condition[:packet_loss] %>">
+                  <%= condition[:name] %>
+                </option>
+              <% end %>
+            </select>
+            <div id="network-details" class="mt-2 text-xs text-gray-500">
+              <span id="bandwidth-info"></span> | 
+              <span id="latency-info"></span> | 
+              <span id="loss-info"></span>
+            </div>
+          </div>
+          
+          <!-- Video Codec -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Video Codec</label>
+            <select id="video-codec" class="w-full p-2 border rounded">
+              <% @test_configs[:video_codecs].each do |codec| %>
+                <option value="<%= codec[:id] %>"><%= codec[:name] %></option>
+              <% end %>
+            </select>
+          </div>
+          
+          <!-- Client Type -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Client Type</label>
+            <select id="client-type" class="w-full p-2 border rounded">
+              <% @test_configs[:client_types].each do |client| %>
+                <option value="<%= client[:id] %>"><%= client[:name] %></option>
+              <% end %>
+            </select>
+          </div>
+          
+          <!-- Test Duration -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Test Duration</label>
+            <select id="test-duration" class="w-full p-2 border rounded">
+              <% @test_configs[:test_durations].each do |duration| %>
+                <option value="<%= duration[:id] %>"><%= duration[:name] %></option>
+              <% end %>
+            </select>
+          </div>
+          
+          <!-- Control Buttons -->
+          <div class="space-y-2">
+            <button onclick="startTest()" 
+                    class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-4 rounded-lg transition">
+              🚀 Start Test
+            </button>
+            <button onclick="stopTest()" 
+                    class="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg transition">
+              ⏹️ Stop Test
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Video Player Panel -->
+      <div class="lg:col-span-2">
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-xl font-semibold mb-4">Video Stream</h2>
+          
+          <!-- Video Player Container -->
+          <div id="video-container" class="relative bg-black rounded-lg overflow-hidden" style="aspect-ratio: 16/9;">
+            <div id="video-placeholder" class="absolute inset-0 flex items-center justify-center text-white">
+              <div class="text-center">
+                <svg class="w-20 h-20 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.55-2.27A1 1 0 0121 8.618v6.764a1 1 0 01-1.45.895L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
+                <p class="text-lg">No stream active</p>
+                <p class="text-sm text-gray-400 mt-2">Select a video and click "Start Test" to begin streaming</p>
+              </div>
+            </div>
+            
+            <!-- LiveKit Video Element (hidden by default) -->
+            <div id="livekit-video" class="absolute inset-0 hidden">
+              <video id="remote-video" class="w-full h-full object-contain" autoplay playsinline></video>
+            </div>
+            
+            <!-- Stream Controls Overlay -->
+            <div id="stream-controls" class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 hidden">
+              <div class="flex items-center justify-between text-white">
+                <div class="flex items-center space-x-4">
+                  <button onclick="togglePlayPause()" class="hover:scale-110 transition">
+                    <svg id="play-icon" class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"></path>
+                    </svg>
+                    <svg id="pause-icon" class="w-8 h-8 hidden" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"></path>
+                    </svg>
+                  </button>
+                  <button onclick="toggleMute()" class="hover:scale-110 transition">
+                    <svg id="volume-icon" class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.415z"></path>
+                    </svg>
+                    <svg id="mute-icon" class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.707.707L4.586 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.586l3.707-3.707a1 1 0 011.09-.217zM12.293 7.293a1 1 0 011.414 0L15 8.586l1.293-1.293a1 1 0 111.414 1.414L16.414 10l1.293 1.293a1 1 0 01-1.414 1.414L15 11.414l-1.293 1.293a1 1 0 01-1.414-1.414L13.586 10l-1.293-1.293a1 1 0 010-1.414z"></path>
+                    </svg>
+                  </button>
+                </div>
+                <div class="flex items-center space-x-4">
+                  <span class="text-sm" id="stream-time">00:00</span>
+                  <button onclick="toggleFullscreen()" class="hover:scale-110 transition">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M3 4a1 1 0 011-1h4a1 1 0 010 2H6.414l2.293 2.293a1 1 0 11-1.414 1.414L5 6.414V8a1 1 0 01-2 0V4zm9 1a1 1 0 010-2h4a1 1 0 011 1v4a1 1 0 01-2 0V6.414l-2.293 2.293a1 1 0 11-1.414-1.414L13.586 5H12zm-9 7a1 1 0 012 0v1.586l2.293-2.293a1 1 0 111.414 1.414L6.414 15H8a1 1 0 010 2H4a1 1 0 01-1-1v-4zm13-1a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 010-2h1.586l-2.293-2.293a1 1 0 111.414-1.414L15 13.586V12a1 1 0 011-1z"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Loading Indicator -->
+            <div id="loading-indicator" class="absolute inset-0 flex items-center justify-center bg-black/50 hidden">
+              <div class="text-white text-center">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+                <p>Connecting to stream...</p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Stream Status Bar -->
+          <div class="mt-4 p-3 bg-gray-100 rounded-lg">
+            <div class="flex items-center justify-between text-sm">
+              <div class="flex items-center space-x-4">
+                <span id="stream-status" class="flex items-center">
+                  <span class="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+                  <span>Disconnected</span>
+                </span>
+                <span id="stream-quality" class="text-gray-600">-</span>
+              </div>
+              <div class="flex items-center space-x-4">
+                <span id="stream-codec" class="text-gray-600">-</span>
+                <span id="stream-latency" class="text-gray-600">-</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Stats Panel: Test Results & Stats -->
+      <div class="lg:col-span-1">
+        <!-- Connection Info -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+          <h2 class="text-xl font-semibold mb-4">Connection Info</h2>
+          <div id="connection-info" class="space-y-2 text-sm">
+            <p><strong>Status:</strong> <span id="conn-status" class="text-gray-500">Not Connected</span></p>
+            <p><strong>Room:</strong> <span id="conn-room" class="font-mono text-xs">-</span></p>
+            <p><strong>WebSocket:</strong> <span id="conn-ws" class="text-xs">-</span></p>
+            <p><strong>Token:</strong> 
+              <span id="conn-token" class="font-mono text-xs inline-block max-w-full truncate">-</span>
+              <button onclick="copyToken()" class="ml-2 text-blue-500 hover:text-blue-700 text-xs">Copy</button>
+            </p>
+          </div>
+        </div>
+        
+        <!-- Stream Stats -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+          <h2 class="text-xl font-semibold mb-4">Stream Statistics</h2>
+          <div id="stream-stats" class="space-y-3">
+            <div class="grid grid-cols-2 gap-2 text-sm">
+              <div class="bg-gray-50 p-2 rounded">
+                <p class="text-gray-600">Resolution</p>
+                <p class="font-semibold" id="stat-resolution">-</p>
+              </div>
+              <div class="bg-gray-50 p-2 rounded">
+                <p class="text-gray-600">Bitrate</p>
+                <p class="font-semibold" id="stat-bitrate">-</p>
+              </div>
+              <div class="bg-gray-50 p-2 rounded">
+                <p class="text-gray-600">FPS</p>
+                <p class="font-semibold" id="stat-fps">-</p>
+              </div>
+              <div class="bg-gray-50 p-2 rounded">
+                <p class="text-gray-600">Packet Loss</p>
+                <p class="font-semibold" id="stat-loss">-</p>
+              </div>
+            </div>
+            
+            <div class="mt-4">
+              <p class="text-sm text-gray-600 mb-2">Simulcast Layers</p>
+              <div id="simulcast-layers" class="space-y-1">
+                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                  <span class="text-sm">High (1080p)</span>
+                  <span id="layer-high" class="text-xs px-2 py-1 bg-gray-300 rounded">Inactive</span>
+                </div>
+                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                  <span class="text-sm">Medium (720p)</span>
+                  <span id="layer-medium" class="text-xs px-2 py-1 bg-gray-300 rounded">Inactive</span>
+                </div>
+                <div class="flex items-center justify-between p-2 bg-gray-50 rounded">
+                  <span class="text-sm">Low (360p)</span>
+                  <span id="layer-low" class="text-xs px-2 py-1 bg-gray-300 rounded">Inactive</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Room Participants -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <h2 class="text-xl font-semibold mb-4">Room Participants</h2>
+          <div id="participants-list" class="space-y-2">
+            <p class="text-gray-500 text-sm">No participants yet</p>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right Panel: Test Scenarios & Logs -->
+      <div class="lg:col-span-1">
+        <!-- Quick Test Scenarios -->
+        <div class="bg-white rounded-lg shadow p-6 mb-6">
+          <h2 class="text-xl font-semibold mb-4">Quick Test Scenarios</h2>
+          <div class="space-y-2">
+            <button onclick="runScenario('degradation')" 
+                    class="w-full text-left p-3 bg-blue-50 hover:bg-blue-100 rounded-lg transition">
+              <p class="font-semibold">📉 Network Degradation</p>
+              <p class="text-xs text-gray-600">Test adaptive bitrate under degrading network</p>
+            </button>
+            <button onclick="runScenario('quality-switch')" 
+                    class="w-full text-left p-3 bg-purple-50 hover:bg-purple-100 rounded-lg transition">
+              <p class="font-semibold">🎚️ Quality Switching</p>
+              <p class="text-xs text-gray-600">Force quality changes to test layer switching</p>
+            </button>
+            <button onclick="runScenario('stability')" 
+                    class="w-full text-left p-3 bg-green-50 hover:bg-green-100 rounded-lg transition">
+              <p class="font-semibold">🔄 Connection Stability</p>
+              <p class="text-xs text-gray-600">Test disconnection and auto-reconnect</p>
+            </button>
+            <button onclick="runScenario('multi-client')" 
+                    class="w-full text-left p-3 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition">
+              <p class="font-semibold">👥 Multi-Client Load</p>
+              <p class="text-xs text-gray-600">Simulate multiple concurrent viewers</p>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Test Log -->
+        <div class="bg-white rounded-lg shadow p-6">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-xl font-semibold">Test Log</h2>
+            <button onclick="clearLog()" class="text-sm text-red-500 hover:text-red-700">Clear</button>
+          </div>
+          <div id="test-log" class="h-64 overflow-y-auto bg-gray-900 text-green-400 p-3 rounded font-mono text-xs">
+            <p>Ready to start testing...</p>
+          </div>
+        </div>
+        
+        <!-- Export Results -->
+        <div class="mt-6 bg-white rounded-lg shadow p-6">
+          <h2 class="text-xl font-semibold mb-4">Export Results</h2>
+          <div class="space-y-2">
+            <button onclick="exportJSON()" 
+                    class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition">
+              📄 Export as JSON
+            </button>
+            <button onclick="exportCSV()" 
+                    class="w-full bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded transition">
+              📊 Export as CSV
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LiveKit Client SDK -->
+<script src="https://cdn.jsdelivr.net/npm/livekit-client@latest/dist/livekit-client.umd.js"></script>
+
+<script>
+(function() {
+  // Wrap in IIFE to avoid global scope pollution and redeclaration
+  window.streamingTestApp = window.streamingTestApp || {};
+  
+  let currentTest = null;
+  let testResults = [];
+  let currentToken = null;
+  let statsInterval = null;
+  let room = null;
+  let videoTrack = null;
+  let audioTrack = null;
+  let startTime = null;
+  let streamTimer = null;
+
+  // Initialize UI
+  document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('video-selector').addEventListener('change', updateVideoInfo);
+  document.getElementById('network-condition').addEventListener('change', updateNetworkInfo);
+  updateNetworkInfo();
+});
+
+function updateVideoInfo() {
+  const selector = document.getElementById('video-selector');
+  const selected = selector.options[selector.selectedIndex];
+  
+  if (selected.value) {
+    document.getElementById('video-info').classList.remove('hidden');
+    document.getElementById('info-id').textContent = selected.value;
+    document.getElementById('info-size').textContent = selected.dataset.size;
+    document.getElementById('info-status').textContent = selected.dataset.streaming === 'true' ? '🔴 Streaming' : '⏸️ Not Streaming';
+  } else {
+    document.getElementById('video-info').classList.add('hidden');
+  }
+}
+
+function updateNetworkInfo() {
+  const selector = document.getElementById('network-condition');
+  const selected = selector.options[selector.selectedIndex];
+  
+  document.getElementById('bandwidth-info').textContent = `${selected.dataset.bandwidth} kbps`;
+  document.getElementById('latency-info').textContent = `${selected.dataset.latency}ms latency`;
+  document.getElementById('loss-info').textContent = `${selected.dataset.loss}% loss`;
+}
+
+function startTest() {
+  const videoId = document.getElementById('video-selector').value;
+  
+  if (!videoId) {
+    alert('Please select a video first');
+    return;
+  }
+  
+  const config = {
+    video_id: videoId,
+    test_config: {
+      quality: document.getElementById('quality-preset').value,
+      network: document.getElementById('network-condition').value,
+      codec: document.getElementById('video-codec').value,
+      client_type: document.getElementById('client-type').value,
+      duration: document.getElementById('test-duration').value
+    }
+  };
+  
+  addLog('Starting test with config: ' + JSON.stringify(config.test_config));
+  
+  fetch('/streaming_test/test_stream', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+    },
+    body: JSON.stringify(config)
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      currentTest = data;
+      currentToken = data.connection.token;
+      updateConnectionInfo(data);
+      startStatsPolling(data.video.room_name);
+      addLog('✅ Test started successfully');
+      if (data.mode === 'vod') {
+        addLog('Mode: VOD (Video on Demand)');
+        addLog('Video ID: ' + data.video.id);
+      } else {
+        addLog('Room: ' + data.video.room_name);
+      }
+      addLog('Token generated for ' + data.test_config.client_type);
+      
+      // Connect based on mode
+      if (data.mode === 'vod') {
+        // For VOD mode, play video directly
+        playVODVideo(data.connection);
+      } else {
+        // For live mode, connect to LiveKit room
+        connectToLiveKit(data.connection);
+      }
+    } else {
+      addLog('❌ Error: ' + data.error);
+    }
+  })
+  .catch(error => {
+    addLog('❌ Failed to start test: ' + error.message);
+  });
+}
+
+function stopTest() {
+  if (!currentTest) {
+    addLog('No active test to stop');
+    return;
+  }
+  
+  stopStatsPolling();
+  
+  fetch('/streaming_test/stop_test', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+    },
+    body: JSON.stringify({ video_id: currentTest.video.id })
+  })
+  .then(response => response.json())
+  .then(data => {
+    addLog('✅ Test stopped');
+    resetConnectionInfo();
+    currentTest = null;
+    currentToken = null;
+  })
+  .catch(error => {
+    addLog('❌ Failed to stop test: ' + error.message);
+  });
+}
+
+function updateConnectionInfo(data) {
+  document.getElementById('conn-status').textContent = '🟢 Connected';
+  document.getElementById('conn-status').className = 'text-green-600 font-semibold';
+  document.getElementById('conn-room').textContent = data.video.room_name;
+  document.getElementById('conn-ws').textContent = data.connection.websocket_url;
+  document.getElementById('conn-token').textContent = data.connection.token.substring(0, 50) + '...';
+  
+  // Update simulcast info
+  if (data.simulcast_layers) {
+    document.getElementById('stat-resolution').textContent = data.simulcast_layers.resolution;
+    document.getElementById('stat-bitrate').textContent = data.simulcast_layers.bitrate;
+    document.getElementById('stat-fps').textContent = data.simulcast_layers.fps + ' fps';
+    
+    // Update layer status
+    if (data.simulcast_layers.active_layer === 2 || data.simulcast_layers.active_layer === 'auto') {
+      document.getElementById('layer-high').textContent = 'Active';
+      document.getElementById('layer-high').className = 'text-xs px-2 py-1 bg-green-500 text-white rounded';
+    }
+    if (data.simulcast_layers.active_layer === 1 || data.simulcast_layers.active_layer === 'auto') {
+      document.getElementById('layer-medium').textContent = 'Active';
+      document.getElementById('layer-medium').className = 'text-xs px-2 py-1 bg-green-500 text-white rounded';
+    }
+    if (data.simulcast_layers.active_layer === 0 || data.simulcast_layers.active_layer === 'auto') {
+      document.getElementById('layer-low').textContent = 'Active';
+      document.getElementById('layer-low').className = 'text-xs px-2 py-1 bg-green-500 text-white rounded';
+    }
+  }
+}
+
+function resetConnectionInfo() {
+  document.getElementById('conn-status').textContent = 'Not Connected';
+  document.getElementById('conn-status').className = 'text-gray-500';
+  document.getElementById('conn-room').textContent = '-';
+  document.getElementById('conn-ws').textContent = '-';
+  document.getElementById('conn-token').textContent = '-';
+  
+  document.getElementById('stat-resolution').textContent = '-';
+  document.getElementById('stat-bitrate').textContent = '-';
+  document.getElementById('stat-fps').textContent = '-';
+  document.getElementById('stat-loss').textContent = '-';
+  
+  ['high', 'medium', 'low'].forEach(layer => {
+    document.getElementById(`layer-${layer}`).textContent = 'Inactive';
+    document.getElementById(`layer-${layer}`).className = 'text-xs px-2 py-1 bg-gray-300 rounded';
+  });
+}
+
+function startStatsPolling(roomName) {
+  stopStatsPolling();
+  
+  statsInterval = setInterval(() => {
+    fetch('/streaming_test/room_stats', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+      },
+      body: JSON.stringify({ room_name: roomName })
+    })
+    .then(response => response.json())
+    .then(data => {
+      updateParticipantsList(data.participants);
+      
+      // Calculate packet loss (simulated for now)
+      const networkCondition = document.getElementById('network-condition').value;
+      const selectedOption = document.querySelector(`#network-condition option[value="${networkCondition}"]`);
+      document.getElementById('stat-loss').textContent = selectedOption.dataset.loss + '%';
+    })
+    .catch(error => {
+      console.error('Failed to fetch stats:', error);
+    });
+  }, 2000);
+}
+
+function stopStatsPolling() {
+  if (statsInterval) {
+    clearInterval(statsInterval);
+    statsInterval = null;
+  }
+}
+
+function updateParticipantsList(participants) {
+  const list = document.getElementById('participants-list');
+  
+  if (!participants || participants.length === 0) {
+    list.innerHTML = '<p class="text-gray-500 text-sm">No participants yet</p>';
+    return;
+  }
+  
+  list.innerHTML = participants.map(p => `
+    <div class="p-2 bg-gray-50 rounded">
+      <p class="font-semibold text-sm">${p.name || p.identity}</p>
+      <p class="text-xs text-gray-600">State: ${p.state}</p>
+      ${p.tracks ? `<p class="text-xs">Tracks: ${p.tracks.length}</p>` : ''}
+    </div>
+  `).join('');
+}
+
+function runScenario(type) {
+  addLog(`🎬 Starting scenario: ${type}`);
+  
+  switch(type) {
+    case 'degradation':
+      addLog('Step 1: Starting with excellent network');
+      document.getElementById('network-condition').value = 'excellent';
+      updateNetworkInfo();
+      
+      setTimeout(() => {
+        addLog('Step 2: Degrading to good network');
+        document.getElementById('network-condition').value = 'good';
+        updateNetworkInfo();
+      }, 10000);
+      
+      setTimeout(() => {
+        addLog('Step 3: Degrading to poor network');
+        document.getElementById('network-condition').value = 'poor';
+        updateNetworkInfo();
+      }, 20000);
+      break;
+      
+    case 'quality-switch':
+      addLog('Step 1: Forcing high quality');
+      document.getElementById('quality-preset').value = 'high';
+      
+      setTimeout(() => {
+        addLog('Step 2: Switching to low quality');
+        document.getElementById('quality-preset').value = 'low';
+      }, 10000);
+      
+      setTimeout(() => {
+        addLog('Step 3: Switching to medium quality');
+        document.getElementById('quality-preset').value = 'medium';
+      }, 20000);
+      break;
+      
+    case 'stability':
+      addLog('Testing connection stability...');
+      addLog('This would simulate disconnect/reconnect in a real client');
+      break;
+      
+    case 'multi-client':
+      addLog('Simulating multiple clients...');
+      addLog('This would create multiple viewer tokens in production');
+      break;
+  }
+}
+
+function copyToken() {
+  if (currentToken) {
+    navigator.clipboard.writeText(currentToken);
+    addLog('Token copied to clipboard');
+  }
+}
+
+function addLog(message) {
+  const log = document.getElementById('test-log');
+  const timestamp = new Date().toLocaleTimeString();
+  const entry = document.createElement('p');
+  entry.textContent = `[${timestamp}] ${message}`;
+  log.appendChild(entry);
+  log.scrollTop = log.scrollHeight;
+  
+  // Store in results
+  testResults.push({ timestamp, message });
+}
+
+function clearLog() {
+  document.getElementById('test-log').innerHTML = '<p>Log cleared. Ready for new test...</p>';
+  testResults = [];
+}
+
+function exportJSON() {
+  const data = {
+    test_config: currentTest,
+    results: testResults,
+    timestamp: new Date().toISOString()
+  };
+  
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `streaming-test-${Date.now()}.json`;
+  a.click();
+  
+  addLog('Results exported as JSON');
+}
+
+function exportCSV() {
+  let csv = 'Timestamp,Message\n';
+  testResults.forEach(result => {
+    csv += `"${result.timestamp}","${result.message}"\n`;
+  });
+  
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `streaming-test-${Date.now()}.csv`;
+  a.click();
+  
+  addLog('Results exported as CSV');
+}
+
+// LiveKit Connection Functions
+function playVODVideo(connectionInfo) {
+  try {
+    addLog('🎥 Starting VOD playback...');
+    
+    // Hide placeholder and show video
+    document.getElementById('loading-indicator').classList.add('hidden');
+    document.getElementById('video-placeholder').classList.add('hidden');
+    
+    // Get or create video element
+    let videoElement = document.getElementById('test-video');
+    if (!videoElement) {
+      videoElement = document.createElement('video');
+      videoElement.id = 'test-video';
+      videoElement.className = 'w-full h-full rounded-lg';
+      videoElement.controls = true;
+      videoElement.autoplay = true;
+      
+      const container = document.querySelector('#video-container') || document.querySelector('.aspect-video');
+      if (container) {
+        container.innerHTML = '';
+        container.appendChild(videoElement);
+      }
+    }
+    
+    // Set video source with token
+    videoElement.src = connectionInfo.video_url;
+    
+    // Add event listeners for monitoring
+    videoElement.addEventListener('loadstart', () => {
+      addLog('📡 Loading video...');
+    });
+    
+    videoElement.addEventListener('loadedmetadata', () => {
+      addLog(`✅ Video metadata loaded - Duration: ${Math.round(videoElement.duration)}s`);
+      document.getElementById('stat-resolution').textContent = `${videoElement.videoWidth}x${videoElement.videoHeight}`;
+    });
+    
+    videoElement.addEventListener('play', () => {
+      addLog('▶️ Video playback started');
+      document.getElementById('conn-status').textContent = '🟢 Playing';
+      document.getElementById('conn-status').className = 'text-green-600 font-semibold';
+    });
+    
+    videoElement.addEventListener('pause', () => {
+      addLog('⏸️ Video paused');
+    });
+    
+    videoElement.addEventListener('error', (e) => {
+      addLog(`❌ Video error: ${e.target.error?.message || 'Unknown error'}`);
+      document.getElementById('conn-status').textContent = '🔴 Error';
+      document.getElementById('conn-status').className = 'text-red-600 font-semibold';
+    });
+    
+    videoElement.addEventListener('timeupdate', () => {
+      // Update playback stats periodically
+      if (videoElement.currentTime % 5 < 0.1) { // Every 5 seconds
+        const buffered = videoElement.buffered.length > 0 ? 
+          Math.round(videoElement.buffered.end(videoElement.buffered.length - 1)) : 0;
+        document.getElementById('stat-bitrate').textContent = `Buffered: ${buffered}s`;
+      }
+    });
+    
+    // Update connection info for VOD
+    document.getElementById('conn-room').textContent = 'VOD Mode';
+    document.getElementById('conn-ws').textContent = 'Direct HTTP Stream';
+    document.getElementById('conn-token').textContent = connectionInfo.token.substring(0, 50) + '...';
+    
+    addLog('✅ VOD player initialized');
+    
+    // Start playback
+    videoElement.play().catch(err => {
+      addLog(`⚠️ Autoplay blocked, click play button: ${err.message}`);
+    });
+    
+  } catch (error) {
+    addLog(`❌ Failed to play VOD: ${error.message}`);
+    console.error('VOD playback error:', error);
+    document.getElementById('loading-indicator').classList.add('hidden');
+    document.getElementById('video-placeholder').classList.remove('hidden');
+  }
+}
+
+async function connectToLiveKit(connectionInfo) {
+  try {
+    // Show loading indicator
+    document.getElementById('loading-indicator').classList.remove('hidden');
+    document.getElementById('video-placeholder').classList.add('hidden');
+    
+    addLog('🔄 Creating LiveKit room instance...');
+    
+    // Create new room instance (LivekitClient is the global object from the UMD build)
+    room = new LivekitClient.Room({
+      adaptiveStream: true,
+      dynacast: true,
+      videoCaptureDefaults: {
+        resolution: LivekitClient.VideoPresets.h1080.resolution
+      }
+    });
+    
+    addLog('📡 Setting up event handlers...');
+    
+    // Set up event handlers with comprehensive debugging
+    room.on(LivekitClient.RoomEvent.TrackSubscribed, handleTrackSubscribed);
+    room.on(LivekitClient.RoomEvent.TrackUnsubscribed, handleTrackUnsubscribed);
+    room.on(LivekitClient.RoomEvent.Disconnected, handleDisconnected);
+    room.on(LivekitClient.RoomEvent.Connected, handleConnected);
+    
+    // Add debugging events
+    room.on(LivekitClient.RoomEvent.ParticipantConnected, (participant) => {
+      addLog(`👤 Participant connected: ${participant.identity} (${participant.sid})`);
+      console.log('Participant details:', participant);
+      
+      // List participant's tracks
+      participant.tracks.forEach((publication, trackSid) => {
+        addLog(`  📡 Track: ${publication.kind} (${trackSid}) - Subscribed: ${publication.isSubscribed}`);
+      });
+    });
+    
+    room.on(LivekitClient.RoomEvent.ParticipantDisconnected, (participant) => {
+      addLog(`👤 Participant disconnected: ${participant.identity}`);
+    });
+    
+    room.on(LivekitClient.RoomEvent.TrackPublished, (publication, participant) => {
+      addLog(`📡 Track published by ${participant.identity}: ${publication.kind} (${publication.trackSid})`);
+      console.log('Track publication details:', publication);
+    });
+    
+    room.on(LivekitClient.RoomEvent.ConnectionStateChanged, (state) => {
+      addLog(`🔄 Connection state changed: ${state}`);
+      console.log('Connection state:', state);
+    });
+    
+    room.on(LivekitClient.RoomEvent.MediaDevicesError, (error) => {
+      addLog(`❌ Media devices error: ${error.message}`);
+      console.error('Media devices error:', error);
+    });
+    
+    room.on(LivekitClient.RoomEvent.ConnectionQualityChanged, (quality, participant) => {
+      addLog(`📶 Connection quality for ${participant.identity}: ${quality}`);
+    });
+    
+    room.on(LivekitClient.RoomEvent.RoomMetadataChanged, (metadata) => {
+      addLog(`📝 Room metadata changed: ${metadata}`);
+    });
+    
+    room.on(LivekitClient.RoomEvent.DataReceived, (payload, participant) => {
+      addLog(`📨 Data received from ${participant.identity}`);
+    });
+    
+    // Connect to room
+    addLog(`🔌 Connecting to room: ${connectionInfo.room_name || 'unknown'}`);
+    addLog(`   WebSocket URL: ${connectionInfo.websocket_url}`);
+    addLog(`   Token length: ${connectionInfo.token.length} chars`);
+    
+    await room.connect(connectionInfo.websocket_url, connectionInfo.token);
+    
+    addLog('✅ Successfully connected to LiveKit room');
+    
+    // List all participants after connection
+    setTimeout(() => {
+      addLog(`📊 Room participants: ${room.participants.size} remote + 1 local`);
+      room.participants.forEach((participant, sid) => {
+        addLog(`  - ${participant.identity} (${sid}): ${participant.tracks.size} tracks`);
+      });
+      
+      if (room.participants.size === 0) {
+        addLog('⚠️ No other participants in room - checking for ingress stream...');
+      }
+    }, 1000);
+    
+  } catch (error) {
+    addLog('❌ Failed to connect to LiveKit: ' + error.message);
+    console.error('LiveKit connection error:', error);
+    document.getElementById('loading-indicator').classList.add('hidden');
+    document.getElementById('video-placeholder').classList.remove('hidden');
+  }
+}
+
+function handleConnected() {
+  document.getElementById('loading-indicator').classList.add('hidden');
+  document.getElementById('stream-status').innerHTML = `
+    <span class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
+    <span>Connected</span>
+  `;
+  
+  // Start stream timer
+  startTime = Date.now();
+  streamTimer = setInterval(updateStreamTime, 1000);
+}
+
+function handleTrackSubscribed(track, publication, participant) {
+  addLog(`📹 Track subscribed: ${track.kind} from ${participant.identity}`);
+  
+  if (track.kind === 'video') {
+    const videoElement = document.getElementById('remote-video');
+    track.attach(videoElement);
+    videoTrack = track;
+    
+    // Show video player and controls
+    document.getElementById('livekit-video').classList.remove('hidden');
+    document.getElementById('stream-controls').classList.remove('hidden');
+    document.getElementById('video-placeholder').classList.add('hidden');
+    
+    // Update stream quality info
+    updateStreamQuality(track);
+  } else if (track.kind === 'audio') {
+    const videoElement = document.getElementById('remote-video');
+    track.attach(videoElement);
+    audioTrack = track;
+  }
+}
+
+function handleTrackUnsubscribed(track, publication, participant) {
+  addLog(`📹 Track unsubscribed: ${track.kind} from ${participant.identity}`);
+  
+  if (track.kind === 'video') {
+    track.detach();
+    videoTrack = null;
+    
+    // Hide video player
+    document.getElementById('livekit-video').classList.add('hidden');
+    document.getElementById('stream-controls').classList.add('hidden');
+    document.getElementById('video-placeholder').classList.remove('hidden');
+  } else if (track.kind === 'audio') {
+    track.detach();
+    audioTrack = null;
+  }
+}
+
+function handleDisconnected() {
+  addLog('🔌 Disconnected from LiveKit room');
+  
+  document.getElementById('stream-status').innerHTML = `
+    <span class="w-2 h-2 bg-red-500 rounded-full mr-2"></span>
+    <span>Disconnected</span>
+  `;
+  
+  // Clean up
+  if (streamTimer) {
+    clearInterval(streamTimer);
+    streamTimer = null;
+  }
+  
+  // Reset UI
+  document.getElementById('livekit-video').classList.add('hidden');
+  document.getElementById('stream-controls').classList.add('hidden');
+  document.getElementById('video-placeholder').classList.remove('hidden');
+}
+
+function disconnectFromLiveKit() {
+  if (room) {
+    room.disconnect();
+    room = null;
+  }
+}
+
+function updateStreamQuality(track) {
+  if (track && track.dimensions) {
+    const quality = `${track.dimensions.width}x${track.dimensions.height}`;
+    document.getElementById('stream-quality').textContent = quality;
+    document.getElementById('stat-resolution').textContent = quality;
+  }
+}
+
+function updateStreamTime() {
+  if (startTime) {
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const minutes = Math.floor(elapsed / 60);
+    const seconds = elapsed % 60;
+    document.getElementById('stream-time').textContent = 
+      `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+}
+
+// Video Control Functions
+function togglePlayPause() {
+  const video = document.getElementById('remote-video');
+  if (video.paused) {
+    video.play();
+    document.getElementById('play-icon').classList.add('hidden');
+    document.getElementById('pause-icon').classList.remove('hidden');
+  } else {
+    video.pause();
+    document.getElementById('play-icon').classList.remove('hidden');
+    document.getElementById('pause-icon').classList.add('hidden');
+  }
+}
+
+function toggleMute() {
+  const video = document.getElementById('remote-video');
+  video.muted = !video.muted;
+  
+  if (video.muted) {
+    document.getElementById('volume-icon').classList.add('hidden');
+    document.getElementById('mute-icon').classList.remove('hidden');
+  } else {
+    document.getElementById('volume-icon').classList.remove('hidden');
+    document.getElementById('mute-icon').classList.add('hidden');
+  }
+}
+
+function toggleFullscreen() {
+  const container = document.getElementById('video-container');
+  
+  if (!document.fullscreenElement) {
+    container.requestFullscreen().catch(err => {
+      addLog(`Error attempting fullscreen: ${err.message}`);
+    });
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+// Update stopTest to disconnect from LiveKit
+const originalStopTest = stopTest;
+stopTest = function() {
+  disconnectFromLiveKit();
+  originalStopTest();
+}
+
+// Expose functions to global scope for onclick handlers
+window.startTest = startTest;
+window.stopTest = stopTest;
+window.runScenario = runScenario;
+window.copyToken = copyToken;
+window.clearLog = clearLog;
+window.exportJSON = exportJSON;
+window.exportCSV = exportCSV;
+window.togglePlayPause = togglePlayPause;
+window.toggleMute = toggleMute;
+window.toggleFullscreen = toggleFullscreen;
+
+})(); // End IIFE
+</script>

@@ -1,0 +1,19 @@
+#!/bin/bash -e
+
+# Enable jemalloc for reduced memory usage and latency.
+if [ -z "${LD_PRELOAD+x}" ]; then
+    LD_PRELOAD=$(find /usr/lib -name libjemalloc.so.2 -print -quit)
+    export LD_PRELOAD
+fi
+
+# Ensure videos directory exists
+# Permissions are handled by host volume ownership (UID 1000)
+mkdir -p /rails/public/videos
+
+# If running the rails server then create or migrate existing database
+if [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
+  # Prepare main database only - using Redis for cache and queue now
+  ./bin/rails db:prepare
+fi
+
+exec "${@}"

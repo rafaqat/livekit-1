@@ -1,0 +1,54 @@
+name: Smoke Test
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+  
+jobs:
+  smoke_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Wait for deployment
+        run: sleep 30
+        
+      - name: Run smoke tests
+        run: |
+          BASE_URL="${{ secrets.PRODUCTION_URL || 'https://admin.livekit.lovedrop.live' }}"
+          
+          echo "🔍 Running smoke tests for $BASE_URL"
+          echo "================================"
+          
+          # Test health endpoint
+          echo -n "Testing health check... "
+          status=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/up")
+          if [ "$status" = "200" ]; then
+            echo "✅ OK"
+          else
+            echo "❌ FAILED (HTTP $status)"
+            exit 1
+          fi
+          
+          # Test root page
+          echo -n "Testing root page... "
+          status=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/")
+          if [ "$status" = "200" ]; then
+            echo "✅ OK"
+          else
+            echo "❌ FAILED (HTTP $status)"
+            exit 1
+          fi
+          
+          # Test videos endpoint
+          echo -n "Testing videos endpoint... "
+          status=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/videos")
+          if [ "$status" = "200" ]; then
+            echo "✅ OK"
+          else
+            echo "⚠️  WARNING (HTTP $status) - May need database setup"
+          fi
+          
+          echo "================================"
+          echo "✅ Basic smoke tests passed!"

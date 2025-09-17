@@ -1,0 +1,45 @@
+<div class="min-h-screen bg-gray-50">
+  <div class="container mx-auto px-4 py-8 max-w-2xl">
+    <!-- Header -->
+    <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+      <h1 class="text-3xl font-bold text-gray-800">Create New Room</h1>
+      <p class="text-gray-600 mt-2">Configure a new LiveKit room</p>
+    </div>
+
+    <!-- Form -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <%= form_with url: rooms_path, local: true do |form| %>
+        <div class="space-y-6">
+          <div>
+            <%= form.label :name, class: "block text-sm font-medium text-gray-700" %>
+            <%= form.text_field :name, required: true, placeholder: "e.g., meeting-room-1", class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+            <p class="mt-1 text-sm text-gray-500">Unique identifier for the room</p>
+          </div>
+
+          <div>
+            <%= form.label :max_participants, "Maximum Participants", class: "block text-sm font-medium text-gray-700" %>
+            <%= form.number_field :max_participants, value: 20, min: 1, max: 1000, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+            <p class="mt-1 text-sm text-gray-500">Maximum number of participants allowed</p>
+          </div>
+
+          <div>
+            <%= form.label :empty_timeout, "Empty Timeout (seconds)", class: "block text-sm font-medium text-gray-700" %>
+            <%= form.number_field :empty_timeout, value: 300, min: 0, class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" %>
+            <p class="mt-1 text-sm text-gray-500">Time in seconds before an empty room is automatically deleted (0 = never)</p>
+          </div>
+
+          <div>
+            <%= form.label :metadata, "Metadata (JSON)", class: "block text-sm font-medium text-gray-700" %>
+            <%= form.text_area :metadata, rows: 3, placeholder: '{"type": "meeting", "host": "admin"}', class: "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 font-mono text-sm" %>
+            <p class="mt-1 text-sm text-gray-500">Optional JSON metadata to attach to the room</p>
+          </div>
+
+          <div class="flex justify-between pt-4">
+            <%= link_to "Cancel", rooms_path, class: "bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition" %>
+            <%= form.submit "Create Room", class: "bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition cursor-pointer" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
